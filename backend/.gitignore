@@ -93,3 +93,4 @@ docker-compose.override.yml
 # JetBrains IDEs
 .idea/
 *.iml
+.DS_Store
