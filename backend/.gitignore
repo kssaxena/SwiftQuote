@@ -1,0 +1,95 @@
+# Node modules
+node_modules/
+
+# Environment variables
+.env
+.env.*
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Dependency directories
+jspm_packages/
+.pnp/
+.pnp.js
+
+# Build output
+dist/
+build/
+out/
+coverage/
+*.tsbuildinfo
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE settings
+.vscode/
+.idea/
+*.sw?
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+
+# Python (if using Python in backend)
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.Python
+.env/
+venv/
+venv*/
+pip-log.txt
+*.sqlite3
+
+# React Native / Android / iOS (for mobile projects)
+android/app/build/
+ios/Pods/
+ios/build/
+*.xcworkspace
+*.xcodeproj/
+*.pbxproj
+*.xcuserstate
+
+# Test coverage
+coverage/
+
+# Next.js
+.next/
+out/
+
+# Parcel
+.cache/
+
+# Firebase
+.firebase/
+
+# Misc
+*.bak
+*.tmp
+*.swp
+*.swo
+*.tgz
+
+# ESLint / Prettier
+.eslintcache
+
+# Docker
+*.container
+*.pid
+*.seed
+docker-compose.override.yml
+
+# TypeScript
+*.tsbuildinfo
+
+# JetBrains IDEs
+.idea/
+*.iml
