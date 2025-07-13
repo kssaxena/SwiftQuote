@@ -17,7 +17,9 @@ const Home = () => {
                 animate={{ opacity: 1 }}
                 transition={{ duration: 1.5 + idx * 0.5 }}
                 className={`cursor-pointer transition-all duration-300 hidden lg:flex color-purple text-white rounded-xl shadow-2xl w-full p-4  ${
-                  activeSection === section ? "" : ""
+                  activeSection === section
+                    ? "underline underline-offset-4"
+                    : ""
                 }`}
                 onClick={() => setActiveSection(section)}
               >

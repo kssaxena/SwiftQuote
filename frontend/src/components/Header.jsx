@@ -1,10 +1,14 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
+import { FaAddressCard } from "react-icons/fa";
 
 const Header = () => {
   const navigate = useNavigate();
   const handleProfile = () => {
     navigate("/user-profile");
+  };
+  const handleRegister = () => {
+    navigate("/user-register");
   };
   return (
     <div className="color-purple text-white h-20 flex justify-between items-center fixed w-full z-50">
@@ -14,6 +18,12 @@ const Header = () => {
           <span className="color-purple text-white p-1 rounded-xl">Quote</span>
         </h1>
       </div>
+      <button onClick={handleRegister}>
+        <h1 className="flex justify-center items-center text-xl">
+          <FaAddressCard />
+          Register
+        </h1>
+      </button>
       <div className="flex justify-center items-center gap-5 px-20">
         <img
           src="https://ik.imagekit.io/pz8qfunss/Products/saree/Spandana%20Somanna%20_%20Celebrity_com.jpeg?updatedAt=1751705845270"

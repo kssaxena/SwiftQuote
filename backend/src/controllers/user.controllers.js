@@ -24,23 +24,74 @@ const generateAccessAndRefreshTokens = async (userId) => {
 };
 
 const registerUser = asyncHandler(async (req, res) => {
-  const { name, number, password } = req.body;
-  console.log(name, number, password);
+  const {
+    name,
+    contact,
+    email,
+    password,
+    businessName,
+    businessAddress,
+    businessContact,
+    gstNumber,
+  } = req.body;
 
-  if (!name || !number || !password) {
+  // Debug log (optional)
+  console.log("Registering:", {
+    name,
+    contact,
+    email,
+    password,
+    businessName,
+    businessAddress,
+    businessContact,
+    gstNumber,
+  });
+
+  // Validate required fields
+  if (
+    !name ||
+    !contact ||
+    !email ||
+    !password ||
+    !businessName ||
+    !businessAddress ||
+    !businessContact ||
+    !gstNumber
+  ) {
     throw new ApiError(400, "Please provide all required fields");
   }
-  if (number.length !== 10) {
-    throw new ApiError(400, "Number must be 10 digits long");
+
+  if (contact.length !== 10 || businessContact.length !== 10) {
+    throw new ApiError(400, "Contact numbers must be 10 digits long");
   }
-  const existingUser = await User.findOne({ number });
+
+  // Check for existing user
+  const existingUser = await User.findOne({
+    $or: [{ contact }, { email }],
+  });
+
   if (existingUser) {
-    throw new ApiError(400, "User already exists");
+    throw new ApiError(400, "User with same contact, email already exists");
   }
-  const user = await User.create({ name, number, password });
+
+  // Create new user
+  const user = await User.create({
+    name,
+    contact,
+    email,
+    password,
+    businessName,
+    businessAddress,
+    businessContact,
+    gstNumber,
+  });
+
+  // Generate tokens
   const { AccessToken, RefreshToken } = await generateAccessAndRefreshTokens(
     user._id
   );
+
+  // Send response
   res
     .status(201)
     .cookie("RefreshToken", RefreshToken)
@@ -49,7 +100,7 @@ const registerUser = asyncHandler(async (req, res) => {
       new ApiResponse(
         201,
         {
-          user: user,
+          user,
           tokens: {
             AccessToken,
             RefreshToken,
