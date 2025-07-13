@@ -44,30 +44,30 @@ const userSchema = new mongoose.Schema(
       unique: true,
     },
 
-    // Images (if still needed)
-    images: [
+    // Images
+    image: [
       {
-        raw: {
-          url: {
-            type: String,
-          },
-          fileId: {
-            type: String,
-          },
+        url: {
+          type: String,
         },
-        processed: {
-          url: {
-            type: String,
-          },
-          fileId: {
-            type: String,
-          },
+        fileId: {
+          type: String,
         },
-        output: {
-          measurement: {
-            type: Object,
-          },
+        filePath: {
+          type: String,
         },
+      },
+    ],
+    templates: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Template",
+      },
+    ],
+    invoices: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Invoice",
       },
     ],
   },

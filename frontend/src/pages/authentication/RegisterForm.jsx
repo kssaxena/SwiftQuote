@@ -1,9 +1,13 @@
 import React, { useRef, useState } from "react";
 import Button from "../../components/Button";
 import { useNavigate } from "react-router-dom";
+import LoadingUI from "../../components/LoadingUI";
+import { FetchData } from "../../utils/FetchFromApi";
+import { parseErrorMessage } from "../../utils/ErrorMessageParser";
 
-const RegistrationForm = () => {
+const RegistrationForm = ({ startLoading, stopLoading }) => {
   const navigate = useNavigate();
+  const [error, setError] = useState("");
   const handleHome = () => {
     navigate("/");
   };
@@ -17,9 +21,30 @@ const RegistrationForm = () => {
     e.target.value;
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("Form submitted:", formData);
+    const formData = new FormData(formRef.current);
+    try {
+      startLoading();
+      const response = await FetchData(
+        `users/register`,
+        "post",
+        formData,
+        true
+      );
+      console.log(response);
+      if (response.data.success) {
+        alert("Registered successfully");
+        HandleLogin();
+      } else {
+        setError("Failed to register.");
+      }
+    } catch (error) {
+      alert(parseErrorMessage(error?.response?.data));
+      setError(err.response?.data?.message || "Failed to register.");
+    } finally {
+      stopLoading();
+    }
   };
 
   return (
@@ -46,7 +71,6 @@ const RegistrationForm = () => {
                 type="text"
                 name="name"
                 className="w-full border border-gray-300 rounded-lg p-2 focus:outline-none focus:ring focus:ring-blue-200"
-                // value={formData.name}
                 onChange={handleChange}
                 required
               />
@@ -56,10 +80,14 @@ const RegistrationForm = () => {
                 Contact Number
               </label>
               <input
-                type="tel"
+                type="number"
                 name="contact"
-                className="w-full border border-gray-300 rounded-lg p-2 focus:outline-none focus:ring focus:ring-blue-200"
-                // value={formData.contact}
+                className="w-full border border-gray-300 rounded-lg p-2 focus:outline-none focus:ring focus:ring-blue-200 no-spinner"
+                pattern="\d{10}"
+                inputMode="numeric"
+                maxLength={10}
+                minLength={10}
+                title="Contact number must be exactly 10 digits"
                 onChange={handleChange}
                 required
               />
@@ -73,7 +101,6 @@ const RegistrationForm = () => {
                 type="email"
                 name="email"
                 className="w-full border border-gray-300 rounded-lg p-2 focus:outline-none focus:ring focus:ring-blue-200"
-                // value={formData.email}
                 onChange={handleChange}
                 required
               />
@@ -84,7 +111,6 @@ const RegistrationForm = () => {
                 type="password"
                 name="password"
                 className="w-full border border-gray-300 rounded-lg p-2 focus:outline-none focus:ring focus:ring-blue-200"
-                // value={formData.password}
                 onChange={handleChange}
                 required
               />
@@ -107,7 +133,6 @@ const RegistrationForm = () => {
                 type="text"
                 name="businessName"
                 className="w-full border border-gray-300 rounded-lg p-2 focus:outline-none focus:ring focus:ring-blue-200"
-                // value={formData.businessName}
                 onChange={handleChange}
                 required
               />
@@ -120,7 +145,11 @@ const RegistrationForm = () => {
                 type="tel"
                 name="businessContact"
                 className="w-full border border-gray-300 rounded-lg p-2 focus:outline-none focus:ring focus:ring-blue-200"
-                // value={formData.businessContact}
+                pattern="\d{10}"
+                inputMode="numeric"
+                maxLength={10}
+                minLength={10}
+                title="Contact number must be exactly 10 digits"
                 onChange={handleChange}
                 required
               />
@@ -136,7 +165,6 @@ const RegistrationForm = () => {
                 type="text"
                 name="businessAddress"
                 className="w-full border border-gray-300 rounded-lg p-2 focus:outline-none focus:ring focus:ring-blue-200"
-                // value={formData.businessAddress}
                 onChange={handleChange}
                 required
               />
@@ -149,8 +177,22 @@ const RegistrationForm = () => {
                 type="text"
                 name="gstNumber"
                 className="w-full border border-gray-300 rounded-lg p-2 focus:outline-none focus:ring focus:ring-blue-200"
-                // value={formData.gstNumber}
+                // pattern="^\d{2}[A-Z]{5}\d{4}[A-Z]{1}[A-Z\d]{1}[Z]{1}[A-Z\d]{1}$"
+                // title="Enter a valid 15-character GST number (e.g. 22AAAAA0000A1Z1)"
                 onChange={handleChange}
+                required
+              />
+            </div>
+            <div className="flex-1">
+              <label className="block mb-1 text-sm font-medium">
+                Business Logo
+              </label>
+              <input
+                type="file"
+                name="image"
+                className="w-full border border-gray-300 rounded-lg p-2 focus:outline-none focus:ring focus:ring-blue-200"
+                onChange={handleChange}
+                accept="image/*"
                 required
               />
             </div>
@@ -165,16 +207,9 @@ const RegistrationForm = () => {
             className={`hover:bg-red-600`}
           />
         </div>
-
-        {/* <button
-          type="submit"
-          className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition"
-        >
-          Register
-        </button> */}
       </form>
     </div>
   );
 };
 
-export default RegistrationForm;
+export default LoadingUI(RegistrationForm);

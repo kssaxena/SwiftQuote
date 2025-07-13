@@ -33,6 +33,7 @@ const registerUser = asyncHandler(async (req, res) => {
     businessAddress,
     businessContact,
     gstNumber,
+    // image,
   } = req.body;
 
   // Debug log (optional)
@@ -57,6 +58,7 @@ const registerUser = asyncHandler(async (req, res) => {
     !businessAddress ||
     !businessContact ||
     !gstNumber
+    // !image
   ) {
     throw new ApiError(400, "Please provide all required fields");
   }
@@ -74,6 +76,23 @@ const registerUser = asyncHandler(async (req, res) => {
     throw new ApiError(400, "User with same contact, email already exists");
   }
 
+  const imageFile = req.file;
+  if (!imageFile) throw new ApiError(404, "Image file not found!");
+  const images = await UploadImages(
+    imageFile.filename,
+    {
+      folderStructure: `all-user/${businessName.split(" ").join("-")}/logo_`,
+    },
+    [`${businessName.split(" ").join("-")}-logo_`, `${gstNumber}`]
+  );
+  console.log(images);
+
+  if (!images)
+    throw new ApiError(
+      500,
+      "Failed to upload image due to internal error! Please try again"
+    );
+
   // Create new user
   const user = await User.create({
     name,
@@ -84,6 +103,11 @@ const registerUser = asyncHandler(async (req, res) => {
     businessAddress,
     businessContact,
     gstNumber,
+    image: {
+      url: images.url,
+      fileId: images.fileId,
+      altText: name,
+    },
   });
 
   // Generate tokens
