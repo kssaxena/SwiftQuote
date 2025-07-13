@@ -1,7 +1,7 @@
 {
-  "name": "ar-measure",
+  "name": "swift-quote",
   "version": "1.0.0",
-  "description": "agumented reality measurement app",
+  "description": "automated billing and quotation web app",
   "main": "src/index.js",
   "type": "module",
   "scripts": {
@@ -9,9 +9,7 @@
   },
   "keywords": [
     "backend",
-    "ar",
-    "ai",
-    "model"
+    "ai"
   ],
   "author": "kshitij",
   "license": "ISC",
