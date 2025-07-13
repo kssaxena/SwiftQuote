@@ -1,11 +1,48 @@
 import React, { useEffect, useRef, useState } from "react";
 import { Route, Routes } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { FetchData } from "./utils/FetchFromApi";
+import { addUser, clearUser } from "./utils/slice/UserInfoSlice";
 import Home from "./pages/home/Home";
 import Header from "./components/Header";
 import UserProfile from "./pages/profile/UserProfile";
 import Register from "./pages/authentication/Register";
 
 function App() {
+  const user = useSelector((store) => store.UserInfo.user);
+
+  const dispatch = useDispatch();
+  useEffect(() => {
+    // Check if RefreshToken exists in localStorage
+    const RefreshToken = localStorage.getItem("RefreshToken");
+    if (!RefreshToken) return; // If no RefreshToken, don't proceed further
+
+    async function reLogin() {
+      try {
+        const user = await FetchData("users/refresh-tokens", "post", {
+          RefreshToken,
+        });
+
+        // Clear localStorage and set new tokens
+        localStorage.clear(); // will clear all the data from localStorage
+        localStorage.setItem("AccessToken", user.data.data.tokens.AccessToken);
+        localStorage.setItem(
+          "RefreshToken",
+          user.data.data.tokens.RefreshToken
+        );
+
+        // Storing data inside redux store
+        dispatch(clearUser());
+        dispatch(addUser(user.data.data.user));
+        return user;
+      } catch (error) {
+        console.log(error);
+      }
+    }
+
+    reLogin();
+  }, []);
+
   return (
     <div className="font-montserrat">
       <Header />

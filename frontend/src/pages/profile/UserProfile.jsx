@@ -1,26 +1,31 @@
-import React from "react";
+import React, { useState } from "react";
 import { RiHome2Fill } from "react-icons/ri";
 import { useNavigate } from "react-router-dom";
 import { FaTrash } from "react-icons/fa";
 import { IoPencil } from "react-icons/io5";
+import { useSelector } from "react-redux";
 
 const UserProfile = () => {
   const navigate = useNavigate();
   const handleHome = () => {
     navigate("/");
   };
+
+  const user = useSelector((store) => store.UserInfo.user);
+  console.log(user);
+
   const personalDetails = {
-    name: "Kshitij Saxena",
-    email: "kshitij@example.com",
-    password: "****************",
-    contact: "+91 9876543210",
+    name: user[0]?.name,
+    email: user[0]?.email,
+    password: user[0]?.name,
+    contact: user[0]?.contact,
   };
 
   const businessDetails = {
-    companyName: "Saxena Enterprises",
-    gstNumber: "29ABCDE1234F2Z5",
-    businessAddress: "Industrial Area, Noida, UP",
-    businessContact: "+91 9123456780",
+    companyName: user[0]?.businessName,
+    gstNumber: user[0]?.gstNumber,
+    businessAddress: user[0]?.businessAddress,
+    businessContact: user[0]?.businessContact,
   };
 
   return (

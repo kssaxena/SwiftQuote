@@ -4,6 +4,8 @@ import { useNavigate } from "react-router-dom";
 import LoadingUI from "../../components/LoadingUI";
 import { FetchData } from "../../utils/FetchFromApi";
 import { parseErrorMessage } from "../../utils/ErrorMessageParser";
+import { addUser, clearUser } from "../../utils/slice/UserInfoSlice";
+import { useDispatch } from "react-redux";
 
 const RegistrationForm = ({ startLoading, stopLoading }) => {
   const navigate = useNavigate();
@@ -11,19 +13,22 @@ const RegistrationForm = ({ startLoading, stopLoading }) => {
   const handleHome = () => {
     navigate("/");
   };
+  const Dispatch = useDispatch();
   const formRef = useRef();
-  //   const formData = new FormData(formRef.current);
-  //   for (let [key, value] of formData.entries()) {
-  //     console.log(`${key}: ${value}`);
-  //   }
 
   const handleChange = (e) => {
     e.target.value;
   };
 
+  // const HandleAutoLogin = () => {};
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     const formData = new FormData(formRef.current);
+    //   const formData = new FormData(formRef.current);
+    //   for (let [key, value] of formData.entries()) {
+    //     console.log(`${key}: ${value}`);
+    //   }
     try {
       startLoading();
       const response = await FetchData(
@@ -35,7 +40,19 @@ const RegistrationForm = ({ startLoading, stopLoading }) => {
       console.log(response);
       if (response.data.success) {
         alert("Registered successfully");
-        HandleLogin();
+        localStorage.clear(); // will clear the all the data from localStorage
+        localStorage.setItem(
+          "AccessToken",
+          response.data.data.tokens.AccessToken
+        );
+        localStorage.setItem(
+          "RefreshToken",
+          response.data.data.tokens.RefreshToken
+        );
+        Dispatch(clearUser());
+        Dispatch(addUser(response.data.data.user));
+        handleHome();
+        alert(response.data.data.message);
       } else {
         setError("Failed to register.");
       }
