@@ -1,9 +1,14 @@
 import React, { useState } from "react";
 import { RiHome2Fill } from "react-icons/ri";
 import { useNavigate } from "react-router-dom";
-import { FaTrash } from "react-icons/fa";
+import { FaPlus, FaTrash } from "react-icons/fa";
 import { IoPencil } from "react-icons/io5";
 import { useSelector } from "react-redux";
+import CreateTemplate from "../../components/CreateTemplate";
+import Button from "../../components/Button";
+import { IoMdClose } from "react-icons/io";
+import { AnimatePresence } from "motion/react";
+import { motion } from "framer-motion";
 
 const UserProfile = () => {
   const navigate = useNavigate();
@@ -12,7 +17,7 @@ const UserProfile = () => {
   };
 
   const user = useSelector((store) => store.UserInfo.user);
-  console.log(user);
+  const [isOpen, setIsOpen] = useState(false);
 
   const personalDetails = {
     name: user[0]?.name,
@@ -36,6 +41,18 @@ const UserProfile = () => {
           <button onClick={handleHome}>
             <RiHome2Fill className="hover:text-neutral-600 duration-300 ease-in-out hover:cursor-pointer" />
           </button>
+          <Button
+            onClick={() => setIsOpen(true)}
+            className={`text-base flex justify-center items-center `}
+            Label={
+              <h1
+                className={`text-base flex justify-center items-center gap-2 font-light`}
+              >
+                <FaPlus />
+                Template
+              </h1>
+            }
+          />
         </h1>
 
         {/* Personal Details */}
@@ -104,6 +121,23 @@ const UserProfile = () => {
           </div>
         </div>
       </div>
+      <AnimatePresence>
+        {isOpen && (
+          <motion.div
+            initial={{ opacity: 0, scale: 0.1 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.1 }}
+            transition={{ duration: 0.4, ease: "easeInOut" }}
+            className="fixed top-0 left-0 flex flex-col  justify-center items-center backdrop-blur-3xl w-full h-full"
+          >
+            <Button
+              onClick={() => setIsOpen(false)}
+              Label={<IoMdClose className="text-xl" />}
+            />
+            <CreateTemplate />
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 };

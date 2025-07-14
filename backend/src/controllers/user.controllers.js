@@ -6,6 +6,8 @@ import { asyncHandler } from "../utils/asyncHandler.js";
 import { UploadImages } from "../utils/imageKit.io.js";
 import { raw } from "express";
 import axios from "axios";
+import { generateInvoicePDF } from "../utils/generateInvoicePDF.js";
+import { Template } from "../models/template.models.js";
 
 const generateAccessAndRefreshTokens = async (userId) => {
   try {
@@ -37,16 +39,16 @@ const registerUser = asyncHandler(async (req, res) => {
   } = req.body;
 
   // Debug log (optional)
-  console.log("Registering:", {
-    name,
-    contact,
-    email,
-    password,
-    businessName,
-    businessAddress,
-    businessContact,
-    gstNumber,
-  });
+  // console.log("Registering:", {
+  //   name,
+  //   contact,
+  //   email,
+  //   password,
+  //   businessName,
+  //   businessAddress,
+  //   businessContact,
+  //   gstNumber,
+  // });
 
   // Validate required fields
   if (
@@ -282,10 +284,93 @@ const RawImageUpload = asyncHandler(async (req, res) => {
   );
 });
 
+const createTemplate = asyncHandler(async (req, res) => {
+  const { userId, templateName } = req.body;
+
+  // Required field check
+  if (!userId || !templateName || !req.body.fields) {
+    throw new ApiError(400, "Please provide userId, templateName, and fields");
+  }
+
+  let fields;
+  try {
+    fields = JSON.parse(req.body.fields); // fields sent as stringified JSON from FormData
+  } catch (error) {
+    throw new ApiError(400, "Invalid fields format. Must be JSON");
+  }
+
+  // Validate fields array
+  if (!Array.isArray(fields) || fields.length === 0) {
+    throw new ApiError(400, "Fields must be a non-empty array");
+  }
+
+  // Optionally validate each field
+  for (const field of fields) {
+    if (!field.label || !field.key || !field.type) {
+      throw new ApiError(400, "Each field must include label, key, and type");
+    }
+  }
+
+  // Optional logo upload handling (if using req.file)
+  let logoUrl = "";
+  if (req.file) {
+    // Assuming you’ve already uploaded to Cloudinary/S3 and set req.file.url
+    logoUrl = req.file.url || "";
+  }
+
+  // Create template
+  const template = await Template.create({
+    userId,
+    templateName,
+    fields,
+    logoUrl,
+  });
+
+  res
+    .status(201)
+    .json(new ApiResponse(201, template, "Template created successfully"));
+});
+
+const generateInvoice = asyncHandler(async (req, res) => {
+  const { userId, templateId } = req.params;
+  const { formData } = req.body;
+
+  // Validate required fields
+  if (!userId || !templateId || !formData || typeof formData !== "object") {
+    throw new ApiError(400, "Missing required fields for invoice generation");
+  }
+
+  // Fetch user
+  const user = await User.findById(userId);
+  if (!user) {
+    throw new ApiError(404, "User not found");
+  }
+
+  // Fetch template
+  const template = await Template.findById(templateId);
+  if (!template) {
+    throw new ApiError(404, "Template not found");
+  }
+
+  // Generate the invoice PDF
+  const pdfBuffer = await generateInvoicePDF({ user, template, formData });
+
+  if (!pdfBuffer || !pdfBuffer.length) {
+    throw new ApiError(500, "PDF generation failed");
+  }
+
+  // Send PDF in response
+  res.setHeader("Content-Type", "application/pdf");
+  res.setHeader("Content-Disposition", "attachment; filename=invoice.pdf");
+
+  res.status(200).send(pdfBuffer);
+});
+
 export {
   registerUser,
   loginUser,
   LogOutUser,
   regenerateRefreshToken,
   RawImageUpload,
+  generateInvoice,
 };

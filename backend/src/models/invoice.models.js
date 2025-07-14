@@ -22,4 +22,4 @@ const invoiceSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-module.exports = mongoose.model("Invoice", invoiceSchema);
+export const Invoice = mongoose.model("Invoice", invoiceSchema);

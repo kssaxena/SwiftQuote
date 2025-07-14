@@ -5,6 +5,7 @@ import {
   LogOutUser,
   regenerateRefreshToken,
   RawImageUpload,
+  generateInvoice,
 } from "../controllers/user.controllers.js";
 import { VerifyUser } from "../middlewares/auth.middlewares.js";
 import { upload } from "../middlewares/multer.middlewares.js";
@@ -17,6 +18,9 @@ router.route("/refresh-tokens").post(VerifyUser, regenerateRefreshToken);
 router
   .route("/raw-image-upload")
   .post(VerifyUser, upload.single("image"), RawImageUpload);
+
+router.route("/templates/create").post(VerifyUser, generateInvoice);
+router.route("/generate-invoice").post(VerifyUser, generateInvoice);
 
 // router.route("/get-user-details/:userId").get(GetUserDetails);
 

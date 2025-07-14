@@ -22,4 +22,4 @@ const templateSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-module.exports = mongoose.model("Template", templateSchema);
+export const Template = mongoose.model("Template", templateSchema);
