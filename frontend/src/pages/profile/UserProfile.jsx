@@ -9,14 +9,16 @@ import Button from "../../components/Button";
 import { IoMdClose } from "react-icons/io";
 import { AnimatePresence } from "motion/react";
 import { motion } from "framer-motion";
+import LoadingUI from "../../components/LoadingUI";
 
-const UserProfile = () => {
+const UserProfile = ({ startLoading, stopLoading }) => {
   const navigate = useNavigate();
   const handleHome = () => {
     navigate("/");
   };
 
   const user = useSelector((store) => store.UserInfo.user);
+  // console.log(user);
   const [isOpen, setIsOpen] = useState(false);
 
   const personalDetails = {
@@ -31,6 +33,10 @@ const UserProfile = () => {
     gstNumber: user[0]?.gstNumber,
     businessAddress: user[0]?.businessAddress,
     businessContact: user[0]?.businessContact,
+    businessEmail: user[0]?.businessEmail,
+    businessCity: user[0]?.businessCity,
+    businessState: user[0]?.businessState,
+    businessPinCode: user[0]?.businessPinCode,
   };
 
   return (
@@ -96,6 +102,18 @@ const UserProfile = () => {
               <strong>Business Contact:</strong>{" "}
               {businessDetails.businessContact}
             </div>
+            <div>
+              <strong>Business Email:</strong> {businessDetails.businessEmail}
+            </div>
+            <div>
+              <strong>City:</strong> {businessDetails.businessCity}
+            </div>
+            <div>
+              <strong>State:</strong> {businessDetails.businessState}
+            </div>
+            <div>
+              <strong>Pin Code:</strong> {businessDetails.businessPinCode}
+            </div>
           </div>
         </div>
 
@@ -142,4 +160,4 @@ const UserProfile = () => {
   );
 };
 
-export default UserProfile;
+export default LoadingUI(UserProfile);

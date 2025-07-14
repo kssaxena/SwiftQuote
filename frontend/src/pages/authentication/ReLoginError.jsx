@@ -6,10 +6,12 @@ import { FetchData } from "../../utils/FetchFromApi";
 import { parseErrorMessage } from "../../utils/ErrorMessageParser";
 import { addUser, clearUser } from "../../utils/slice/UserInfoSlice";
 import { useDispatch } from "react-redux";
+import Login from "./Login";
 
-const RegistrationForm = ({ startLoading, stopLoading }) => {
+const ReLoginError = ({ startLoading, stopLoading }) => {
   const navigate = useNavigate();
   const [error, setError] = useState("");
+  const [isOpen, setIsOpen] = useState(false);
   const handleHome = () => {
     navigate("/");
   };
@@ -51,7 +53,8 @@ const RegistrationForm = ({ startLoading, stopLoading }) => {
         );
         Dispatch(clearUser());
         Dispatch(addUser(response.data.data.user));
-        handleHome();
+        window.location.reload();
+        // handleHome();
         alert(response.data.data.message);
       } else {
         setError("Failed to register.");
@@ -71,6 +74,10 @@ const RegistrationForm = ({ startLoading, stopLoading }) => {
         onSubmit={handleSubmit}
         className="bg-white p-8 rounded-xl shadow-md w-full max-w-3xl"
       >
+        <h1 className="flex justify-center items-center gap-10 w-full">
+          Already have an account{" "}
+          <Button onClick={() => setIsOpen(true)} Label="Login" />{" "}
+        </h1>
         <h2 className="text-2xl font-bold text-gray-800 mb-6">
           Registration Form
         </h2>
@@ -264,17 +271,21 @@ const RegistrationForm = ({ startLoading, stopLoading }) => {
           </div>
         </div>
 
-        <div className="flex gap-10 w-full justify-end items-end ">
-          <Button Label="Register" type="submit" />
-          <Button
-            Label="Cancel"
-            onClick={handleHome}
-            className={`hover:bg-red-600`}
-          />
+        <div className="flex flex-col gap-10 w-full justify-evenly items-end ">
+          <Button Label="Register" type="submit" className={`w-full`} />
+          <h1 className="flex justify-center items-center gap-10 w-full">
+            Already have an account{" "}
+            <Button onClick={() => setIsOpen(true)} Label="Login" />{" "}
+          </h1>
         </div>
       </form>
+      {isOpen && (
+        <div className="fixed top-0 left-0 flex justify-center items-center w-full h-full backdrop-blur-2xl">
+          <Login />
+        </div>
+      )}
     </div>
   );
 };
 
-export default LoadingUI(RegistrationForm);
+export default LoadingUI(ReLoginError);

@@ -1,11 +1,16 @@
 import React, { useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
+import { useSelector } from "react-redux";
+import LoadingUI from "../../components/LoadingUI";
+import ReLoginError from "../authentication/ReLoginError";
 
-const Home = () => {
+const Home = ({ startLoading, stopLoading }) => {
+  const user = useSelector((store) => store.UserInfo.user);
+
   const [activeSection, setActiveSection] = useState("Home");
 
   const sections = ["Home", "Bills", "Quotations", "Estimate Invoice"];
-  return (
+  return user.length ? (
     <div className="flex justify-start items-start pt-20">
       <aside className="h-screen p-5 w-72 bg-neutral-100">
         <nav>
@@ -31,7 +36,11 @@ const Home = () => {
       </aside>
       <main className="relative bg-neutral-100 w-full h-full">Hello world</main>
     </div>
+  ) : (
+    <div>
+      <ReLoginError />
+    </div>
   );
 };
 
-export default Home;
+export default LoadingUI(Home);

@@ -1,12 +1,14 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
 import { FaAddressCard } from "react-icons/fa";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { LuLogOut } from "react-icons/lu";
 import { motion } from "framer-motion";
+import { clearUser } from "../utils/slice/UserInfoSlice";
 
 const Header = () => {
   const navigate = useNavigate();
+  const Dispatch = useDispatch();
   const user = useSelector((store) => store.UserInfo.user);
   // console.log(user);
   const handleProfile = () => {
@@ -58,7 +60,14 @@ const Header = () => {
           </button>
           <div className="">
             <button
-              onClick={handleProfile}
+              onClick={() => {
+                Dispatch(clearUser());
+                localStorage.removeItem("AccessToken");
+                localStorage.removeItem("RefreshToken");
+                alert("You are logged out! Please log in.");
+                setTimeout(() => navigate("/"), 100);
+                // console.log(localStorage.getItem("RefreshToken"));
+              }}
               className="bg-white text-black rounded-xl px-4 py-2 cursor-pointer shadow hover:shadow-2xl "
             >
               <h1 className="flex justify-center items-center gap-2">
@@ -70,10 +79,10 @@ const Header = () => {
         </motion.div>
       ) : (
         <div className=" px-20">
-          <button onClick={handleRegister}>
-            <h1 className="flex justify-center items-center text-xl">
+          <button>
+            <h1 className="flex justify-center items-center text-xl gap-5">
               <FaAddressCard />
-              Register
+              Kindly register first to begin...
             </h1>
           </button>
         </div>

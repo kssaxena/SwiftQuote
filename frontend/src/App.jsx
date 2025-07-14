@@ -7,9 +7,11 @@ import Home from "./pages/home/Home";
 import Header from "./components/Header";
 import UserProfile from "./pages/profile/UserProfile";
 import Register from "./pages/authentication/Register";
+import ReLoginError from "./pages/authentication/ReLoginError";
 
 function App() {
   const user = useSelector((store) => store.UserInfo.user);
+  const [reloginFailed, setReloginFailed] = useState(false);
 
   const dispatch = useDispatch();
   useEffect(() => {
@@ -36,14 +38,22 @@ function App() {
         dispatch(addUser(user.data.data.user));
         return user;
       } catch (error) {
-        console.log(error);
+        console.log("Relogin error:", error);
+        setReloginFailed(true); // trigger error state
       }
     }
 
     reLogin();
   }, []);
 
-  return (
+  return reloginFailed ? (
+    <div className="font-montserrat">
+      <Header />
+      <Routes>
+        <Route path="/" element={<ReLoginError />} />
+      </Routes>
+    </div>
+  ) : (
     <div className="font-montserrat">
       <Header />
       <Routes>

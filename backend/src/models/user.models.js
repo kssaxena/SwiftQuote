@@ -34,6 +34,18 @@ const userSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
+    businessEmail: {
+      type: String,
+      required: true,
+    },
+    businessCity: {
+      type: String,
+      required: true,
+    },
+    businessState: {
+      type: String,
+      required: true,
+    },
     businessContact: {
       type: String,
       required: true,
@@ -42,6 +54,11 @@ const userSchema = new mongoose.Schema(
       type: String,
       required: true,
       unique: true,
+    },
+    businessPinCode: {
+      type: String,
+      required: true,
+      // unique: true,
     },
 
     // Images

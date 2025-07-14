@@ -34,6 +34,10 @@ const registerUser = asyncHandler(async (req, res) => {
     businessName,
     businessAddress,
     businessContact,
+    businessEmail,
+    businessCity,
+    businessState,
+    businessPinCode,
     gstNumber,
     // image,
   } = req.body;
@@ -59,7 +63,11 @@ const registerUser = asyncHandler(async (req, res) => {
     !businessName ||
     !businessAddress ||
     !businessContact ||
-    !gstNumber
+    !gstNumber ||
+    !businessEmail ||
+    !businessCity ||
+    !businessState ||
+    !businessPinCode
     // !image
   ) {
     throw new ApiError(400, "Please provide all required fields");
@@ -104,6 +112,10 @@ const registerUser = asyncHandler(async (req, res) => {
     businessName,
     businessAddress,
     businessContact,
+    businessEmail,
+    businessCity,
+    businessState,
+    businessPinCode,
     gstNumber,
     image: {
       url: images.url,
@@ -138,21 +150,21 @@ const registerUser = asyncHandler(async (req, res) => {
 });
 
 const loginUser = asyncHandler(async (req, res) => {
-  const { number, password } = req.body;
-  console.log(number, password);
+  const { contact, password } = req.body;
+  console.log(contact, password);
 
-  if (!number || !password) {
+  if (!contact || !password) {
     throw new ApiError(400, "Please provide all required fields");
   }
-  if (number.length !== 10) {
+  if (contact.length !== 10) {
     throw new ApiError(
       400,
-      "Incorrect credentials, contact number must be 10 digits"
+      "Incorrect credentials, contact contact must be 10 digits"
     );
   }
-  const user = await User.findOne({ number });
+  const user = await User.findOne({ contact });
 
-  if (!user) throw new ApiError(404, "Invalid contact number");
+  if (!user) throw new ApiError(404, "Invalid contact contact");
 
   const isValid = await user.isPasswordCorrect(password);
 
