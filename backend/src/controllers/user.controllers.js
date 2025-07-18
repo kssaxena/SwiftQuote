@@ -43,16 +43,16 @@ const registerUser = asyncHandler(async (req, res) => {
   } = req.body;
 
   // Debug log (optional)
-  // console.log("Registering:", {
-  //   name,
-  //   contact,
-  //   email,
-  //   password,
-  //   businessName,
-  //   businessAddress,
-  //   businessContact,
-  //   gstNumber,
-  // });
+  console.log("Registering:", {
+    name,
+    contact,
+    email,
+    password,
+    businessName,
+    businessAddress,
+    businessContact,
+    gstNumber,
+  });
 
   // Validate required fields
   if (
