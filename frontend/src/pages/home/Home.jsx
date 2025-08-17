@@ -3,16 +3,17 @@ import { AnimatePresence, motion } from "framer-motion";
 import { useSelector } from "react-redux";
 import LoadingUI from "../../components/LoadingUI";
 import ReLoginError from "../authentication/ReLoginError";
+import Bills from "../bill-main/bills";
 
 const Home = ({ startLoading, stopLoading }) => {
   const user = useSelector((store) => store.UserInfo.user);
 
-  const [activeSection, setActiveSection] = useState("Home");
+  const [activeSection, setActiveSection] = useState("Bills");
 
   const sections = ["Home", "Bills", "Quotations", "Estimate Invoice"];
   return user.length ? (
-    <div className="flex justify-start items-start pt-20">
-      <aside className="h-screen p-5 w-72 bg-neutral-100">
+    <div className="flex justify-start items-start ">
+      <aside className="h-screen p-5 w-72 bg-neutral-100 pt-24">
         <nav>
           <ul className="flex gap-5 items-start flex-col ">
             {sections.map((section, idx) => (
@@ -34,7 +35,26 @@ const Home = ({ startLoading, stopLoading }) => {
           </ul>
         </nav>
       </aside>
-      <main className="relative bg-neutral-100 w-full h-full">Hello world</main>
+      <main className="relative bg-neutral-100 w-full h-full pt-20">
+        {activeSection === "Home" && (
+          <div>
+            <h1 className="text-2xl font-bold text-center pt-20">
+              Welcome to SwiftQuote
+            </h1>
+            <p className="text-center mt-4">
+              Your one-stop solution for managing bills and quotations.
+            </p>
+          </div>
+        )}
+        {activeSection === "Bills" && (
+          <div>
+            <h1 className="text-2xl font-bold text-center pt-20">
+              Bills Section
+            </h1>
+            <Bills />
+          </div>
+        )}
+      </main>
     </div>
   ) : (
     <div>

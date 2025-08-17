@@ -21,7 +21,7 @@ const Header = () => {
     navigate("/");
   };
   return (
-    <div className="color-purple text-white h-20 flex justify-between items-center fixed w-full z-50">
+    <div className="color-purple text-white h-20 flex justify-between items-center fixed w-full z-10">
       <button onClick={handleHome} className=" px-20">
         <motion.img
           initial={{ y: -100, opacity: 1 }}
