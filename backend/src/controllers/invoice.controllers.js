@@ -120,4 +120,22 @@ const createInvoice = asyncHandler(async (req, res) => {
     .json(new ApiResponse(201, { invoice }, "Invoice created successfully"));
 });
 
-export { createInvoice };
+const getUserAllInvoices = asyncHandler(async (req, res) => {
+  const { userId } = req.params;
+
+  if (!userId) {
+    throw new ApiError(400, "User ID is required");
+  }
+
+  const invoices = await Invoice.find({ userId }).sort({ createdAt: -1 });
+
+  if (!invoices || invoices.length === 0) {
+    throw new ApiError(404, "No invoices found for this user");
+  }
+
+  return res
+    .status(200)
+    .json(new ApiResponse(200, { invoices }, "Invoices fetched successfully"));
+});
+
+export { createInvoice, getUserAllInvoices };

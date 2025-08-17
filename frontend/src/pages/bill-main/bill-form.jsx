@@ -2,17 +2,19 @@ import React, { useRef, useState } from "react";
 import Button from "../../components/Button";
 import InputBox from "../../components/Input";
 import LoadingUI from "../../components/LoadingUI";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { FetchData } from "../../utils/FetchFromApi";
+import { createInvoice } from "../../utils/slice/InvoiceSlice";
 
 const Bill_form = ({ onCancel, startLoading, stopLoading }) => {
+  const dispatch = useDispatch();
   const user = useSelector((store) => store.UserInfo.user);
   const formRef = useRef();
   // Goods / Items
   const [items, setItems] = useState([
     { description: "", size: "", qty: 1, rate: 0, amount: 0 },
   ]);
-  console.log(items);
+  // console.log(items);
 
   // Tax & Summary
   const [billingAmount, setBillingAmount] = useState("");
@@ -62,36 +64,73 @@ const Bill_form = ({ onCancel, startLoading, stopLoading }) => {
   const totalGoodsAmount = items.reduce((sum, item) => sum + item.amount, 0);
 
   // inside Bill_form component
+  // const handleGenerateInvoice = async (e) => {
+  //   e.preventDefault();
+
+  //   try {
+  //     // setError("");
+  //     // setSuccess("");
+
+  //     const formData = new FormData(formRef.current);
+
+  //     // Add dynamic items array separately so backend can parse them easily
+  //     formData.append("items", JSON.stringify(items));
+
+  //     // Debugging – see what’s going to backend
+  //     for (var pair of formData.entries()) {
+  //       console.log(pair[0] + ", " + pair[1]);
+  //     }
+
+  //     startLoading();
+  //     const response = await FetchData(
+  //       // "invoices/create-invoice",
+  //       `users/generate-invoice/${user[0]?._id}`,
+  //       "post",
+  //       formData
+  //       // true // since we’re using FormData
+  //     );
+
+  //     console.log(response);
+  //     // setSuccess("Invoice generated successfully!");
+  //     alert("Invoice generated successfully!");
+  //     // optional: reset form + items
+  //     formRef.current.reset();
+  //     setItems([{ description: "", size: "", qty: 1, rate: 0, amount: 0 }]);
+  //     setBillingAmount("");
+  //     setReceived("");
+  //     onCancel();
+  //   } catch (err) {
+  //     console.error(err);
+  //     alert(
+  //       err.response?.data?.message ||
+  //         "An error occurred while generating the invoice."
+  //     );
+  //   } finally {
+  //     stopLoading();
+  //   }
+  // };
+
   const handleGenerateInvoice = async (e) => {
     e.preventDefault();
 
     try {
-      // setError("");
-      // setSuccess("");
-
       const formData = new FormData(formRef.current);
 
-      // Add dynamic items array separately so backend can parse them easily
+      // Add dynamic items array separately so backend can parse them
       formData.append("items", JSON.stringify(items));
 
-      // Debugging – see what’s going to backend
-      for (var pair of formData.entries()) {
-        console.log(pair[0] + ", " + pair[1]);
-      }
+      // Debugging
+      // for (var pair of formData.entries()) {
+      //   console.log(pair[0] + ", " + pair[1]);
+      // }
 
       startLoading();
-      const response = await FetchData(
-        // "invoices/create-invoice",
-        `users/generate-invoice/${user[0]?._id}`,
-        "post",
-        formData
-        // true // since we’re using FormData
-      );
 
-      console.log(response);
-      // setSuccess("Invoice generated successfully!");
+      await dispatch(createInvoice({ userId: user[0]?._id, formData }));
+
       alert("Invoice generated successfully!");
-      // optional: reset form + items
+
+      // Reset form + states
       formRef.current.reset();
       setItems([{ description: "", size: "", qty: 1, rate: 0, amount: 0 }]);
       setBillingAmount("");
@@ -100,7 +139,7 @@ const Bill_form = ({ onCancel, startLoading, stopLoading }) => {
     } catch (err) {
       console.error(err);
       alert(
-        err.response?.data?.message ||
+        err?.payload?.message ||
           "An error occurred while generating the invoice."
       );
     } finally {
@@ -116,7 +155,7 @@ const Bill_form = ({ onCancel, startLoading, stopLoading }) => {
         onSubmit={handleGenerateInvoice}
       >
         <h2 className="text-xl font-semibold">Invoice Form</h2>
-        {console.log(user)}
+        {/* {console.log(user)} */}
 
         <div className="flex lg:gap-5 gap-2 lg:flex-row flex-col">
           {/* ---------- Customer Details ---------- */}

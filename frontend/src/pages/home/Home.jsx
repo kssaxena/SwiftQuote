@@ -46,14 +46,7 @@ const Home = ({ startLoading, stopLoading }) => {
             </p>
           </div>
         )}
-        {activeSection === "Bills" && (
-          <div>
-            <h1 className="text-2xl font-bold text-center pt-20">
-              Bills Section
-            </h1>
-            <Bills />
-          </div>
-        )}
+        {activeSection === "Bills" && <Bills />}
       </main>
     </div>
   ) : (
