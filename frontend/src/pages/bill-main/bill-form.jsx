@@ -147,6 +147,12 @@ const Bill_form = ({ onCancel, startLoading, stopLoading }) => {
     }
   };
 
+  // const handleCancel = () => {
+  //   ();
+  //   console.log("before reload");
+  //   // window.location.reload();
+  // };
+
   return (
     <div className="flex justify-center items-center ">
       <form
@@ -401,6 +407,7 @@ const Bill_form = ({ onCancel, startLoading, stopLoading }) => {
           />
           <Button
             Label="Cancel"
+            type={"reset"}
             onClick={onCancel}
             className={`w-full lg:w-fit hover:bg-red-500`}
           />

@@ -13,6 +13,7 @@ import {
   createInvoice,
   getInvoiceById,
   getUserAllInvoices,
+  updateInvoiceById,
 } from "../controllers/invoice.controllers.js";
 
 const router = Router();
@@ -32,6 +33,9 @@ router.route("/templates/create").post(VerifyUser, generateInvoice);
 router.route("/generate-invoice/:userId").post(VerifyUser, createInvoice);
 router.route("/get-all-invoices/:userId").get(VerifyUser, getUserAllInvoices);
 router.route("/get-invoice/:invoiceId").get(VerifyUser, getInvoiceById);
+router
+  .route("/update-invoice/:invoiceId/:userId")
+  .post(VerifyUser, updateInvoiceById);
 
 //secured routes
 router.route("/logout").post(VerifyUser, LogOutUser);

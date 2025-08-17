@@ -1,22 +1,93 @@
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
-import { fetchInvoiceById } from "../../utils/slice/InvoiceSlice";
+import {
+  fetchInvoiceById,
+  updateInvoice,
+} from "../../utils/slice/InvoiceSlice";
 import InputBox from "../../components/Input";
 import Button from "../../components/Button";
 import { useReactToPrint } from "react-to-print";
+import LoadingUI from "../../components/LoadingUI";
 
-const CurrentInvoice = () => {
+const sgstRate = 9;
+const cgstRate = 9;
+
+const CurrentInvoice = ({ startLoading, stopLoading }) => {
   const { invoiceId } = useParams();
   const dispatch = useDispatch();
   const user = useSelector((store) => store.UserInfo.user[0]);
+  const userId = user?._id;
+  // console.log(user?._id);
   const { currentInvoice, loading, error } = useSelector(
     (state) => state.Invoices
   );
-  const currentProducts = currentInvoice?.items;
-  console.log(currentInvoice);
 
   const contentRef = useRef();
+  const formRef = useRef();
+
+  const [isEditOpen, setIsEditOpen] = useState(false);
+
+  // ---------- Local edit state ----------
+  const [formData, setFormData] = useState({
+    customerName: "",
+    customerAddress: "",
+    customerPhone: "",
+    customerState: "",
+    invoiceNumber: "",
+    invoiceDate: "",
+    referenceNo: "",
+    buyerOrderNo: "",
+    dispatchDocNo: "",
+    deliveryNote: "",
+    destination: "",
+    paymentTerms: "",
+    billingAmount: "",
+    receivedAmount: "",
+  });
+
+  // Goods / Items for popup editor
+  const [items, setItems] = useState([]);
+
+  // ---------- Helpers ----------
+  const formatDateForInput = (d) => {
+    if (!d) return "";
+    const date = new Date(d);
+    if (Number.isNaN(date.getTime())) return "";
+    const yyyy = date.getFullYear();
+    const mm = String(date.getMonth() + 1).padStart(2, "0");
+    const dd = String(date.getDate()).padStart(2, "0");
+    return `${yyyy}-${mm}-${dd}`;
+  };
+
+  const initializeEditState = (inv) => {
+    setFormData({
+      customerName: inv?.customerName || "",
+      customerAddress: inv?.customerAddress || "",
+      customerPhone: inv?.customerPhone || "",
+      customerState: inv?.customerState || "",
+      invoiceNumber: inv?.invoiceNumber || "",
+      invoiceDate: inv?.invoiceDate ? formatDateForInput(inv.invoiceDate) : "", // fallback if you store createdAt only
+      referenceNo: inv?.referenceNo || "",
+      buyerOrderNo: inv?.buyerOrderNo || "",
+      dispatchDocNo: inv?.dispatchDocNo || "",
+      deliveryNote: inv?.deliveryNote || "",
+      destination: inv?.destination || "",
+      paymentTerms: inv?.paymentTerms || "",
+      billingAmount: inv?.billingAmount ?? "",
+      receivedAmount: inv?.receivedAmount ?? "",
+    });
+    setItems(
+      (inv?.items || []).map((it) => ({
+        description: it.description || "",
+        size: it.size || "",
+        qty: Number(it.qty || 0),
+        rate: Number(it.rate || 0),
+        amount: Number(it.amount || 0),
+      }))
+    );
+  };
+
   const safeInvoiceNumber = currentInvoice?.invoiceNumber?.replace(
     /[\/:]/g,
     "-"
@@ -27,20 +98,99 @@ const CurrentInvoice = () => {
   });
 
   useEffect(() => {
-    if (invoiceId) {
-      dispatch(fetchInvoiceById(invoiceId));
-    }
+    if (invoiceId) dispatch(fetchInvoiceById(invoiceId));
   }, [invoiceId, dispatch]);
 
-  // extras
-  //   const dispatch = useDispatch();
+  // If popup opens or invoice changes, prefill edit state
+  useEffect(() => {
+    if (isEditOpen && currentInvoice) initializeEditState(currentInvoice);
+  }, [isEditOpen, currentInvoice]);
 
-  //   const handleUpdateInvoice = (invoiceId) => {
-  //     const formData = new FormData(formRef.current);
-  //     formData.append("items", JSON.stringify(items));
+  // ---------- Derived tax values (billingAmount is incl. tax) ----------
+  const numbers = useMemo(() => {
+    const billing = Number(formData.billingAmount || 0);
+    const received = Number(formData.receivedAmount || 0);
+    const totalRate = sgstRate + cgstRate;
 
-  //     dispatch(updateInvoice({ invoiceId, formData }));
-  //   };
+    const taxableValue =
+      totalRate > 0 ? billing / (1 + totalRate / 100) : billing;
+    const sgst = (taxableValue * sgstRate) / 100;
+    const cgst = (taxableValue * cgstRate) / 100;
+    const totalTax = sgst + cgst;
+    const dueAmount = billing - received;
+
+    return {
+      billing,
+      received,
+      taxableValue,
+      sgst,
+      cgst,
+      totalTax,
+      dueAmount,
+    };
+  }, [formData.billingAmount, formData.receivedAmount]);
+
+  // ---------- Handlers ----------
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleItemChange = (index, field, value) => {
+    setItems((prev) => {
+      const next = [...prev];
+      const v = field === "qty" || field === "rate" ? Number(value) : value;
+      next[index][field] = v;
+      if (field === "qty" || field === "rate") {
+        const qty = Number(next[index].qty || 0);
+        const rate = Number(next[index].rate || 0);
+        next[index].amount = qty * rate;
+      }
+      return next;
+    });
+  };
+
+  const addItem = () => {
+    setItems((prev) => [
+      ...prev,
+      { description: "", size: "", qty: 1, rate: 0, amount: 0 },
+    ]);
+  };
+
+  const removeItem = (index) => {
+    setItems((prev) => prev.filter((_, i) => i !== index));
+  };
+
+  const openEdit = () => setIsEditOpen(true);
+
+  const handleUpdateInvoice = async (e) => {
+    e.preventDefault();
+    try {
+      // startLoading();
+      const fd = new FormData(formRef.current);
+
+      // Append items as JSON (disabled inputs won't get into FormData)
+      fd.append("items", JSON.stringify(items));
+
+      // Append derived numbers (since we’re showing them disabled)
+      fd.set("taxableValue", String(numbers.taxableValue.toFixed(2)));
+      fd.set("sgstValue", String(numbers.sgst.toFixed(2)));
+      fd.set("cgstValue", String(numbers.cgst.toFixed(2)));
+      fd.set("totalTax", String(numbers.totalTax.toFixed(2)));
+      fd.set("dueAmount", String(numbers.dueAmount.toFixed(2)));
+
+      await dispatch(updateInvoice({ invoiceId, formData: fd, userId }));
+      alert("Updated Successfully");
+      setIsEditOpen(false);
+    } catch (err) {
+      console.log(err);
+    } finally {
+      // stopLoading();
+    }
+  };
+
+  // ---------- Render ----------
+  const currentProducts = currentInvoice?.items;
 
   return (
     <div className="py-20 w-full ">
@@ -48,7 +198,7 @@ const CurrentInvoice = () => {
         <div className="flex justify-start items-center w-[90%] gap-5">
           <h2 className="text-xl font-semibold">Invoice Id: {invoiceId}</h2>
           <Button Label="Print" onClick={reactToPrintFn} />
-          <Button Label="Edit" />
+          <Button Label="Edit" onClick={openEdit} />
         </div>
 
         <div
@@ -173,9 +323,6 @@ const CurrentInvoice = () => {
                 <span>Sub Total</span>{" "}
                 <span>{currentInvoice?.billingAmount}</span>
               </div>
-              {/* <div className="flex justify-between">
-                <span>Discount</span> <span>{currentInvoice?.discount}</span>
-              </div> */}
               <div className="flex justify-between font-bold border-b">
                 <span>Grand Total</span>{" "}
                 <span>{currentInvoice?.billingAmount}</span>
@@ -217,304 +364,245 @@ const CurrentInvoice = () => {
             </div>
           </section>
         </div>
+        {isEditOpen && (
+          <div className="fixed inset-0 bg-black/50 flex justify-center items-start overflow-scroll no-scrollbar z-50">
+            <div className="bg-white p-6 rounded-lg shadow-lg w-[95%] max-w-4xl">
+              <h2 className="text-lg font-semibold mb-4">Edit Invoice</h2>
+
+              <form
+                ref={formRef}
+                onSubmit={handleUpdateInvoice}
+                className="space-y-6"
+              >
+                {/* Customer Details */}
+                <div className="grid grid-cols-2 gap-4 border p-4 rounded-lg">
+                  <InputBox
+                    LabelName="Customer Name"
+                    Name="customerName"
+                    Type="text"
+                    Value={formData.customerName}
+                    onChange={handleChange}
+                  />
+                  <InputBox
+                    LabelName="Customer Address"
+                    Name="customerAddress"
+                    Type="text"
+                    Value={formData.customerAddress}
+                    onChange={handleChange}
+                  />
+                  <InputBox
+                    LabelName="Phone Number"
+                    Name="customerPhone"
+                    Type="number"
+                    Value={formData.customerPhone}
+                    onChange={handleChange}
+                  />
+                  <InputBox
+                    LabelName="State Name & Code"
+                    Name="customerState"
+                    Type="text"
+                    Value={formData.customerState}
+                    onChange={handleChange}
+                  />
+                </div>
+
+                {/* Invoice Details */}
+                <div className="grid grid-cols-2 gap-4 border p-4 rounded-lg">
+                  <InputBox
+                    LabelName="Invoice Number"
+                    Name="invoiceNumber"
+                    Type="text"
+                    Value={formData.invoiceNumber}
+                    onChange={handleChange}
+                  />
+                  <InputBox
+                    LabelName="Invoice Date"
+                    Name="invoiceDate"
+                    Type="date"
+                    Value={formData.invoiceDate}
+                    onChange={handleChange}
+                  />
+                  <InputBox
+                    LabelName="Reference No. & Date"
+                    Name="referenceNo"
+                    Type="text"
+                    Value={formData.referenceNo}
+                    onChange={handleChange}
+                  />
+                  <InputBox
+                    LabelName="Buyer's Order No."
+                    Name="buyerOrderNo"
+                    Type="text"
+                    Value={formData.buyerOrderNo}
+                    onChange={handleChange}
+                  />
+                  <InputBox
+                    LabelName="Dispatch Document No."
+                    Name="dispatchDocNo"
+                    Type="text"
+                    Value={formData.dispatchDocNo}
+                    onChange={handleChange}
+                  />
+                  <InputBox
+                    LabelName="Delivery Note"
+                    Name="deliveryNote"
+                    Type="text"
+                    Value={formData.deliveryNote}
+                    onChange={handleChange}
+                  />
+                  <InputBox
+                    LabelName="Destination"
+                    Name="destination"
+                    Type="text"
+                    Value={formData.destination}
+                    onChange={handleChange}
+                  />
+                  <InputBox
+                    LabelName="Mode/Terms of Payment"
+                    Name="paymentTerms"
+                    Type="text"
+                    Value={formData.paymentTerms}
+                    onChange={handleChange}
+                  />
+                </div>
+
+                {/* Goods / Items */}
+                <div className="border p-4 rounded-lg">
+                  <h3 className="text-lg font-semibold mb-2">Goods / Items</h3>
+
+                  {items.map((item, index) => (
+                    <div
+                      key={index}
+                      className="bg-gray-100 p-3 rounded-lg mb-3"
+                    >
+                      <InputBox
+                        LabelName="Description"
+                        Name={`description-${index}`}
+                        Type="text"
+                        Value={item.description}
+                        onChange={(e) =>
+                          handleItemChange(index, "description", e.target.value)
+                        }
+                      />
+                      <div className="grid grid-cols-3 gap-3">
+                        <InputBox
+                          LabelName="Size"
+                          Name={`size-${index}`}
+                          Type="text"
+                          Value={item.size}
+                          onChange={(e) =>
+                            handleItemChange(index, "size", e.target.value)
+                          }
+                        />
+                        <InputBox
+                          LabelName="Qty"
+                          Name={`qty-${index}`}
+                          Type="number"
+                          Value={item.qty}
+                          onChange={(e) =>
+                            handleItemChange(index, "qty", e.target.value)
+                          }
+                        />
+                        <InputBox
+                          LabelName="Rate"
+                          Name={`rate-${index}`}
+                          Type="number"
+                          Value={item.rate}
+                          onChange={(e) =>
+                            handleItemChange(index, "rate", e.target.value)
+                          }
+                        />
+                      </div>
+                      <InputBox
+                        LabelName="Amount"
+                        Name={`amount-${index}`}
+                        Type="number"
+                        Value={item.amount}
+                        DisableRequired={true}
+                      />
+                      <Button
+                        Label="✕ Remove"
+                        onClick={() => removeItem(index)}
+                        className="hover:bg-red-600 mt-2"
+                        type="button"
+                      />
+                    </div>
+                  ))}
+
+                  <Button Label="+ Add Item" onClick={addItem} type="button" />
+                </div>
+
+                {/* Tax & Summary */}
+                <div className="border p-4 rounded-lg">
+                  <h3 className="text-lg font-semibold">Tax & Summary</h3>
+
+                  <InputBox
+                    LabelName="Total Billing Amount (incl. tax)"
+                    Name="billingAmount"
+                    Type="number"
+                    Value={formData.billingAmount}
+                    onChange={handleChange}
+                  />
+
+                  <div className="grid grid-cols-2 gap-3">
+                    <InputBox
+                      LabelName="Taxable Value"
+                      Name="taxableValue"
+                      Value={numbers.taxableValue.toFixed(2)}
+                      DisableRequired={true}
+                    />
+                    <InputBox
+                      LabelName={`SGST (${sgstRate}%)`}
+                      Name="sgstValue"
+                      Value={numbers.sgst.toFixed(2)}
+                      DisableRequired={true}
+                    />
+                    <InputBox
+                      LabelName={`CGST (${cgstRate}%)`}
+                      Name="cgstValue"
+                      Value={numbers.cgst.toFixed(2)}
+                      DisableRequired={true}
+                    />
+                    <InputBox
+                      LabelName="Total Tax"
+                      Name="totalTax"
+                      Value={numbers.totalTax.toFixed(2)}
+                      DisableRequired={true}
+                    />
+                  </div>
+
+                  <InputBox
+                    LabelName="Amount Received"
+                    Name="receivedAmount"
+                    Type="number"
+                    Value={formData.receivedAmount}
+                    onChange={handleChange}
+                  />
+
+                  <InputBox
+                    LabelName="Due Amount"
+                    Name="dueAmount"
+                    Value={numbers.dueAmount.toFixed(2)}
+                    DisableRequired={true}
+                  />
+                </div>
+
+                <div className="flex justify-end gap-3">
+                  <Button
+                    Label="Cancel"
+                    onClick={() => setIsEditOpen(false)}
+                    className="bg-gray-400 hover:bg-gray-500"
+                    type="button"
+                  />
+                  <Button Label="Save Changes" type="submit" />
+                </div>
+              </form>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
 };
 
-export default CurrentInvoice;
-//  <div
-//    ref={contentRef}
-//    className="flex flex-col justify-center items-center gap-5 py-5"
-//  >
-//    {/* this is the section below which is displaying the details of the company  */}
-//    <div className="w-[90%]">
-//      <div className="space-y-3 border p-4 rounded-lg shadow w-full">
-//        <h3 className="text-lg font-semibold">Company Details</h3>
-//        <div className="flex justify-center items-center gap-2">
-//          <InputBox
-//            LabelName="Business Name"
-//            Type="text"
-//            Placeholder="Enter Customer Name"
-//            Name="customerName"
-//            Value={user?.businessName}
-//            DisableRequired={true}
-//          />
-
-//          <InputBox
-//            LabelName="Business Address"
-//            Type="text"
-//            Placeholder="Enter Address"
-//            Name="customerAddress"
-//            Value={user?.businessAddress}
-//            DisableRequired={true}
-//          />
-//          <InputBox
-//            LabelName="Business Address State"
-//            Type="text"
-//            Placeholder="Enter Address"
-//            Name="customerAddress"
-//            Value={user?.businessState}
-//            DisableRequired={true}
-//          />
-
-//          <InputBox
-//            LabelName="G.S.T. Number"
-//            Type="text"
-//            Placeholder="Enter State Name & Code"
-//            Name="customerState"
-//            Value={user?.gstNumber}
-//            DisableRequired={true}
-//          />
-//          <InputBox
-//            LabelName="Business Number"
-//            Type="number"
-//            Placeholder="Enter Phone Number"
-//            Name="customerPhone"
-//            Value={user?.businessContact}
-//            DisableRequired={true}
-//          />
-//          <InputBox
-//            LabelName="Business Email"
-//            Type="text"
-//            Placeholder="Enter State Name & Code"
-//            Name="customerState"
-//            Value={user?.businessEmail}
-//            DisableRequired={true}
-//          />
-//        </div>
-//      </div>
-//    </div>
-//    {/* this is the section below which is displaying the details of the invoice  */}
-//    <section className="space-y-6 w-[90%]">
-//      <div className="flex lg:gap-5 gap-2 lg:flex-row flex-col">
-//        {/* ---------- Customer Details ---------- */}
-//        <div className="space-y-3 border p-4 rounded-lg shadow w-full">
-//          <h3 className="text-lg font-semibold">Customer Details</h3>
-//          <div className="flex justify-center items-center gap-2">
-//            <InputBox
-//              LabelName="Customer Name"
-//              Type="text"
-//              Placeholder="Enter Customer Name"
-//              Name="customerName"
-//              Value={currentInvoice?.customerName}
-//              DisableRequired={true}
-//            />
-
-//            <InputBox
-//              LabelName="Address"
-//              Type="text"
-//              Placeholder="Enter Address"
-//              Name="customerAddress"
-//              Value={currentInvoice?.customerAddress}
-//              DisableRequired={true}
-//            />
-
-//            <InputBox
-//              LabelName="Phone Number"
-//              Type="number"
-//              Placeholder="Enter Phone Number"
-//              Name="customerPhone"
-//              Value={currentInvoice?.customerPhone}
-//              DisableRequired={true}
-//            />
-
-//            <InputBox
-//              LabelName="State Name & Code"
-//              Type="text"
-//              Placeholder="Enter State Name & Code"
-//              Name="customerState"
-//              Value={currentInvoice?.customerState}
-//              DisableRequired={true}
-//            />
-//          </div>
-//        </div>
-//        {/* ---------- Invoice Details ---------- */}
-//      </div>
-//      <div className="space-y-3 border p-4 rounded-lg shadow">
-//        <h3 className="text-lg font-semibold">Invoice Details</h3>
-
-//        <div className="flex justify-center items-center gap-2">
-//          <InputBox
-//            LabelName="Invoice Number"
-//            Type="text"
-//            Placeholder="Enter Invoice Number / Estimate No."
-//            Name="invoiceNumber"
-//            Value={currentInvoice?.invoiceNumber}
-//            DisableRequired={true}
-//          />
-
-//          <InputBox
-//            LabelName="Invoice Date (MM.DD.YY)"
-//            // Type="date"
-//            Placeholder="Select Invoice Date"
-//            Name="invoiceDate"
-//            Value={new Date(currentInvoice?.createdAt).toLocaleDateString()}
-//            DisableRequired={true}
-//          />
-
-//          <InputBox
-//            LabelName="Reference No. & Date"
-//            Type="text"
-//            Placeholder="Enter Reference No. & Date"
-//            Name="referenceNo"
-//            Value={currentInvoice?.referenceNo}
-//            DisableRequired={true}
-//          />
-
-//          <InputBox
-//            LabelName="Buyer's Order No."
-//            Type="text"
-//            Placeholder="Enter Buyer's Order No."
-//            Name="buyerOrderNo"
-//            Value={currentInvoice?.buyerOrderNo}
-//            DisableRequired={true}
-//          />
-//        </div>
-
-//        <div className="flex justify-center items-center gap-2">
-//          <InputBox
-//            LabelName="Dispatch Document No."
-//            Type="text"
-//            Placeholder="Enter Dispatch Document No."
-//            Name="dispatchDocNo"
-//            Value={currentInvoice?.dispatchDocNo}
-//            DisableRequired={true}
-//          />
-
-//          <InputBox
-//            LabelName="Delivery Note"
-//            Type="text"
-//            Placeholder="Enter Delivery Note"
-//            Name="deliveryNote"
-//            Value={currentInvoice?.deliveryNote}
-//            DisableRequired={true}
-//          />
-
-//          <InputBox
-//            LabelName="Destination"
-//            Type="text"
-//            Placeholder="Enter Destination"
-//            Name="destination"
-//            Value={currentInvoice?.destination}
-//            DisableRequired={true}
-//          />
-
-//          <InputBox
-//            LabelName="Mode/Terms of Payment"
-//            Type="text"
-//            Placeholder="Enter Mode/Terms of Payment"
-//            Name="paymentTerms"
-//            Value={currentInvoice?.paymentTerms}
-//            DisableRequired={true}
-//          />
-//        </div>
-//      </div>
-
-//      <div className="flex lg:gap-5 gap-2 flex-col">
-//        {/* ---------- Goods / Items Section ---------- */}
-//        <div className="space-y-3 border p-4 rounded-lg shadow">
-//          <h3 className="text-lg font-semibold">Goods / Items</h3>
-
-//          {currentProducts?.map((item, index) => (
-//            <div
-//              key={index}
-//              className="flex justify-center items-center rounded-xl gap-2"
-//            >
-//              <InputBox
-//                className="w-fit"
-//                LabelName="Description"
-//                Placeholder="Item Name and Description"
-//                Name={`description-${index}`}
-//                Value={item.description}
-//                DisableRequired={true}
-//              />
-//              <div className="flex justify-center items-center gap-2">
-//                <InputBox
-//                  LabelName="Size"
-//                  Placeholder="Size"
-//                  Name={`size-${index}`}
-//                  Value={item.size}
-//                  DisableRequired={true}
-//                />
-//                <InputBox
-//                  LabelName="Qty"
-//                  Type="number"
-//                  Placeholder="Qty"
-//                  Name={`qty-${index}`}
-//                  Value={item.qty}
-//                  DisableRequired={true}
-//                />
-//                <InputBox
-//                  LabelName="Rate"
-//                  Type="number"
-//                  Placeholder="Rate"
-//                  Name={`rate-${index}`}
-//                  Value={item.rate}
-//                  DisableRequired={true}
-//                />
-//                <InputBox
-//                  LabelName="Amount"
-//                  Type="number"
-//                  Placeholder="Amount"
-//                  Name={`amount-${index}`}
-//                  Value={item.amount}
-//                  DisableRequired={true}
-//                />
-//              </div>
-//            </div>
-//          ))}
-//        </div>
-
-//        {/* ---------- Tax & Summary Section ---------- */}
-//        <div className="border p-4 rounded-lg shadow">
-//          <h3 className="text-lg font-semibold">Tax & Summary</h3>
-
-//          <div className="flex gap-2 ">
-//            <InputBox
-//              LabelName="Total (incl. tax)"
-//              Name="billingAmount"
-//              Value={currentInvoice?.billingAmount}
-//              DisableRequired={true}
-//            />
-//            <InputBox
-//              LabelName={"Taxable Value"}
-//              Value={currentInvoice?.taxableValue}
-//              DisableRequired={true}
-//              Name={"taxableValue"}
-//            />
-//            <InputBox
-//              LabelName={" SGST (9%)"}
-//              Value={currentInvoice?.sgstValue}
-//              DisableRequired={true}
-//              Name={"sgstValue"}
-//            />
-//            <InputBox
-//              LabelName={"CGST (9%)"}
-//              Value={currentInvoice?.cgstValue}
-//              DisableRequired={true}
-//              Name={"cgstValue"}
-//            />
-//            <InputBox
-//              LabelName={" Total Tax"}
-//              Value={currentInvoice?.totalTax}
-//              DisableRequired={true}
-//              Name={"totalTax"}
-//            />
-//            <InputBox
-//              LabelName="Amount Received"
-//              Name="receivedAmount"
-//              Value={currentInvoice?.receivedAmount}
-//              DisableRequired={true}
-//            />
-//            <InputBox
-//              LabelName="Due Amount"
-//              Name="dueAmount"
-//              Value={currentInvoice?.dueAmount}
-//              DisableRequired={true}
-//            />
-//          </div>
-//        </div>
-//      </div>
-//    </section>
-//  </div>
+export default LoadingUI(CurrentInvoice);

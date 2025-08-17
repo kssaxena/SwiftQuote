@@ -157,70 +157,79 @@ const getInvoiceById = asyncHandler(async (req, res) => {
     .json(new ApiResponse(200, { invoice }, "Invoice fetched successfully"));
 });
 
-// Update an invoice by ID
-// const updateInvoice = asyncHandler(async (req, res) => {
-//   const { invoiceId } = req.params;
+// const updateInvoiceById = asyncHandler(async (req, res) => {
+//   const { invoiceId, userId } = req.params;
+//   console.log("controller Reached", invoiceId, userId);
 
 //   if (!invoiceId) {
 //     throw new ApiError(400, "Invoice ID is required");
 //   }
 
-//   // Parse items from request body (since they come as JSON string in FormData)
-//   let items = [];
-//   try {
-//     items = JSON.parse(req.body.items || "[]");
-//   } catch (err) {
-//     throw new ApiError(400, "Invalid items format");
+//   // Collect everything sent in body/form-data
+//   const updateFields = { ...req.body };
+
+//   // If items were sent as JSON string (from frontend FormData)
+//   if (updateFields.items) {
+//     try {
+//       updateFields.items = JSON.parse(updateFields.items);
+//     } catch (err) {
+//       throw new ApiError(400, "Invalid items format. Must be JSON.");
+//     }
 //   }
 
-//   // Collect all fields (only update if provided)
-//   const updateData = {
-//     customerName,
-//     customerAddress,
-//     customerPhone,
-//     customerState,
-//     invoiceNumber,
-//     invoiceDate,
-//     referenceNo,
-//     buyerOrderNo,
-//     dispatchDocNo,
-//     deliveryNote: req.body.deliveryNote,
-//     destination: req.body.destination,
-//     paymentTerms: req.body.paymentTerms,
-//     deliveryTerms: req.body.deliveryTerms,
-//     billingAmount: req.body.billingAmount,
-//     taxableValue: req.body.taxableValue,
-//     sgstValue: req.body.sgstValue,
-//     cgstValue: req.body.cgstValue,
-//     totalTax: req.body.totalTax,
-//     receivedAmount: req.body.receivedAmount,
-//     dueAmount: req.body.dueAmount,
-//   };
+//   // Build new data map for invoice
+//   const updatedData = { ...updateFields };
 
-//   if (items.length > 0) {
-//     updateData.items = items;
-//   }
-
-//   // Find and update invoice
-//   const updatedInvoice = await Invoice.findByIdAndUpdate(
-//     invoiceId,
-//     { $set: updateData },
-//     { new: true, runValidators: true }
+//   const invoice = await Invoice.findOneAndUpdate(
+//     { _id: invoiceId, userId }, // ensures only owner can edit
+//     { data: updatedData },
+//     { new: true }
 //   );
 
-//   if (!updatedInvoice) {
-//     throw new ApiError(404, "Invoice not found");
+//   if (!invoice) {
+//     throw new ApiError(404, "Invoice not found or not authorized to edit");
 //   }
 
 //   return res
 //     .status(200)
-//     .json(
-//       new ApiResponse(
-//         200,
-//         { invoice: updatedInvoice },
-//         "Invoice updated successfully"
-//       )
-//     );
+//     .json(new ApiResponse(200, { invoice }, "Invoice updated successfully"));
 // });
 
-export { createInvoice, getUserAllInvoices, getInvoiceById };
+const updateInvoiceById = asyncHandler(async (req, res) => {
+  // const { invoiceId } = req.params;
+  const { invoiceId, userId } = req.params;
+
+
+  // If using FormData, all fields come inside req.body
+  // Items will come as JSON string -> parse it
+  let updatedData = { ...req.body };
+
+  if (updatedData.items) {
+    try {
+      updatedData.items = JSON.parse(updatedData.items);
+    } catch (err) {
+      throw new ApiError(400, "Invalid items format. Must be JSON.");
+    }
+  }
+
+  // ✅ Debug log
+  console.log("Updating invoice:", invoiceId, updatedData);
+
+  const invoice = await Invoice.findById(invoiceId);
+  if (!invoice) {
+    throw new ApiError(404, "Invoice not found");
+  }
+
+  // Merge the updated fields into existing invoice
+  Object.keys(updatedData).forEach((key) => {
+    invoice[key] = updatedData[key];
+  });
+
+  await invoice.save();
+
+  res
+    .status(200)
+    .json(new ApiResponse(200, invoice, "Invoice updated successfully"));
+});
+
+export { createInvoice, getUserAllInvoices, getInvoiceById, updateInvoiceById };

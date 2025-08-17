@@ -8,6 +8,7 @@ import { useEffect } from "react";
 import { fetchInvoices } from "../../utils/slice/InvoiceSlice";
 import { Link } from "react-router-dom";
 import InputBox from "../../components/Input";
+import { MdCurrencyRupee } from "react-icons/md";
 
 const Bills = ({ startLoading, stopLoading }) => {
   const dispatch = useDispatch();
@@ -15,11 +16,12 @@ const Bills = ({ startLoading, stopLoading }) => {
   const { invoices, loading, error } = useSelector((state) => state.Invoices);
   const [isActive, setIsActive] = useState(false);
   const TableHeaders = [
-    "Customer Name",
-    "Customer Contact Number",
+    "Client",
+    "Contact Number",
     "Amount",
-    "Invoice Number",
+    "Invoice No #",
     "Invoice Date",
+    "Payment Status",
   ];
 
   const [searchQuery, setSearchQuery] = useState("");
@@ -33,13 +35,14 @@ const Bills = ({ startLoading, stopLoading }) => {
       invoice?.invoiceNumber?.toLowerCase().includes(query)
     );
   });
+  // console.log(filteredInvoices);
 
   useEffect(() => {
-    startLoading();
+    // startLoading();
     if (user?._id) {
       dispatch(fetchInvoices(user._id));
     }
-    stopLoading();
+    // stopLoading();
   }, [user, dispatch]);
 
   return (
@@ -62,14 +65,11 @@ const Bills = ({ startLoading, stopLoading }) => {
 
       {/* table  */}
       <div className="w-full h-full mt-1">
-        <table className="w-full border-collapse border border-gray-300 rounded-xl h-full overflow-scroll ">
-          <thead>
+        <table className="w-full text-sm text-left bg-white rounded-xl shadow-sm overflow-hidden">
+          <thead className="bg-gray-100 text-gray-600">
             <tr>
               {TableHeaders.map((header, index) => (
-                <th
-                  key={index}
-                  className="border border-gray-500 px-4 py-2 bg-neutral-300 "
-                >
+                <th key={index} className="px-5 py-3 font-medium tracking-wide">
                   {header}
                 </th>
               ))}
@@ -78,33 +78,57 @@ const Bills = ({ startLoading, stopLoading }) => {
           <tbody>
             {filteredInvoices.length > 0 ? (
               filteredInvoices.map((invoice) => (
-                <tr key={invoice._id}>
-                  <td className="border border-gray-500 px-4 py-2">
+                <tr
+                  key={invoice._id}
+                  className="hover:bg-gray-50 transition-colors duration-200 border-b"
+                >
+                  <td className="px-5 py-3 text-[#7E63F4] font-medium">
                     <Link
-                      className="hover:text-blue-500 underline-blue-500 hover:underline "
                       to={`/current-invoice/${invoice._id}`}
+                      className="hover:underline"
                     >
                       {invoice?.customerName}
                     </Link>
                   </td>
-                  <td className="border border-gray-500 px-4 py-2">
+                  <td className="px-5 py-3 text-gray-700">
                     {invoice?.customerPhone}
                   </td>
-                  <td className="border border-gray-500 px-4 py-2">
-                    {invoice?.billingAmount}
+                  <td className="px-5 py-3 text-gray-700">
+                    <span className="flex justify-start items-center font-semibold">
+                      <MdCurrencyRupee />
+                      {invoice?.billingAmount}
+                    </span>
                   </td>
-                  <td className="border border-gray-500 px-4 py-2">
+                  <td className="px-5 py-3 text-gray-700">
                     {invoice?.invoiceNumber}
                   </td>
-                  <td className="border border-gray-500 px-4 py-2 ">
+                  <td className="px-5 py-3 text-gray-500">
                     <p>{new Date(invoice?.createdAt).toLocaleDateString()}</p>
-                    <p>{new Date(invoice?.createdAt).toLocaleTimeString()}</p>
+                    <p className="text-xs">
+                      {new Date(invoice?.createdAt).toLocaleTimeString()}
+                    </p>
+                  </td>
+                  <td className="px-5 py-3 text-gray-500">
+                    <p>
+                      {invoice.dueAmount === 0 ? (
+                        <span className="bg-green-100 text-center w-fit p-1 font-bold text-green-700 text-xs select-none">
+                          Complete
+                        </span>
+                      ) : (
+                        <span className="bg-yellow-100 text-center w-fit p-1 font-bold text-yellow-700 text-xs select-none">
+                          Pending
+                        </span>
+                      )}
+                    </p>
                   </td>
                 </tr>
               ))
             ) : (
               <tr>
-                <td colSpan={TableHeaders.length} className="text-center py-4">
+                <td
+                  colSpan={TableHeaders.length}
+                  className="px-5 py-6 text-center text-gray-500"
+                >
                   No invoices found.
                 </td>
               </tr>

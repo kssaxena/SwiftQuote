@@ -5,6 +5,7 @@ import LoadingUI from "../../components/LoadingUI";
 import ReLoginError from "../authentication/ReLoginError";
 import Bills from "../bill-main/bills";
 import Dashboard from "../dashboard/dashboard";
+import DashboardHome from "../dashboard/dashboard-home";
 
 const Home = ({ startLoading, stopLoading }) => {
   const user = useSelector((store) => store.UserInfo.user);
@@ -44,7 +45,8 @@ const Home = ({ startLoading, stopLoading }) => {
         </nav>
       </aside>
       <main className="bg-neutral-100 w-full h-screen pt-16">
-        {activeSection === "Dashboard" && <Dashboard />}
+        {activeSection === "Dashboard" && <DashboardHome />}
+        {/* {activeSection === "Dashboard" && <Dashboard />} */}
         {activeSection === "Bills" && <Bills />}
       </main>
     </div>
