@@ -43,28 +43,32 @@ const Bills = ({ startLoading, stopLoading }) => {
   }, [user, dispatch]);
 
   return (
-    <div className="flex justify-center items-center flex-col p-5">
-      <div className="flex justify-between items-center w-full gap-4 ">
-        <h1 className="text-2xl font-bold text-center">Bills </h1>
-        <Button Label="Generate Bill" onClick={() => setIsActive(true)} />
+    <div className="flex justify-start items-center flex-col p-5 h-full overflow-scroll relative no-scrollbar">
+      <div className="sticky top-1 w-full bg-neutral-100">
+        <div className="flex justify-between items-center w-full gap-4 ">
+          <h1 className="text-2xl font-bold text-center">Invoices </h1>
+          <Button Label="+ Generate" onClick={() => setIsActive(true)} />
+        </div>
+        <div className=" flex justify-end w-full ">
+          <InputBox
+            LabelName={<h1>Search among {invoices.length} invoices</h1>}
+            Value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            Type="text"
+            Placeholder={"Search Invoices"}
+          />
+        </div>
       </div>
-      <div className=" flex justify-end w-full ">
-        <InputBox
-          LabelName={<h1>Search among {invoices.length} invoices</h1>}
-          Value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-          Type="text"
-          Placeholder={"Search Invoices"}
-        />
-      </div>
-      <div className="w-full  h-full">
-        <table className="w-full border-collapse border border-gray-300 rounded-xl">
+
+      {/* table  */}
+      <div className="w-full h-full mt-1">
+        <table className="w-full border-collapse border border-gray-300 rounded-xl h-full overflow-scroll ">
           <thead>
             <tr>
               {TableHeaders.map((header, index) => (
                 <th
                   key={index}
-                  className="border border-gray-500 px-4 py-2 bg-neutral-300"
+                  className="border border-gray-500 px-4 py-2 bg-neutral-300 "
                 >
                   {header}
                 </th>

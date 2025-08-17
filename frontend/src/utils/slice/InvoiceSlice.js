@@ -39,7 +39,7 @@ export const createInvoice = createAsyncThunk(
         `users/generate-invoice/${userId}`,
         "post",
         formData,
-        true
+        // true
       );
       return response.data.data.invoice;
     } catch (err) {

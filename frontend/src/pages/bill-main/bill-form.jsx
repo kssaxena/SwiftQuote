@@ -324,13 +324,7 @@ const Bill_form = ({ onCancel, startLoading, stopLoading }) => {
             ))}
 
             {/* Add Item Button */}
-            <button
-              type="button"
-              onClick={addItem}
-              className="px-4 py-2 bg-blue-600 text-white rounded-lg shadow hover:bg-blue-700"
-            >
-              + Add Item
-            </button>
+            <Button type="button" onClick={addItem} Label="+ Add Item" />
 
             {/* Total Goods */}
             <div className="text-right font-semibold text-lg mt-4">

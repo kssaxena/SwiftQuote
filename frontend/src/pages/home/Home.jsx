@@ -19,8 +19,8 @@ const Home = ({ startLoading, stopLoading }) => {
 
   const sections = ["Home", "Bills", "Quotations", "Estimate Invoice"];
   return user.length ? (
-    <div className="flex justify-start items-start ">
-      <aside className="h-screen p-5 w-72 bg-neutral-100 pt-24">
+    <div className="flex justify-start items-start  w-full ">
+      <aside className="h-screen p-5 w-72 bg-neutral-200 pt-24 shadow ">
         <nav>
           <ul className="flex gap-5 items-start flex-col ">
             {sections.map((section, idx) => (
@@ -29,10 +29,10 @@ const Home = ({ startLoading, stopLoading }) => {
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ duration: 1.5 + idx * 0.5 }}
-                className={`cursor-pointer transition-all duration-300 hidden lg:flex color-purple text-white rounded-xl shadow-2xl w-full p-4  ${
+                className={`cursor-pointer transition-all duration-300 hidden lg:flex color-purple rounded-xl shadow-2xl w-full p-4  ${
                   activeSection === section
-                    ? "underline underline-offset-4"
-                    : ""
+                    ? "underline underline-offset-4 text-white"
+                    : "bg-white text-black"
                 }`}
                 onClick={() => setActiveSection(section)}
               >
@@ -42,7 +42,7 @@ const Home = ({ startLoading, stopLoading }) => {
           </ul>
         </nav>
       </aside>
-      <main className="relative bg-neutral-100 w-full h-full pt-20">
+      <main className="bg-neutral-100 w-full h-screen pt-16">
         {activeSection === "Home" && (
           <div>
             <h1 className="text-2xl font-bold text-center pt-20">
