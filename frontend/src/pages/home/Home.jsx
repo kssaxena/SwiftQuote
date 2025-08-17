@@ -4,6 +4,7 @@ import { useSelector } from "react-redux";
 import LoadingUI from "../../components/LoadingUI";
 import ReLoginError from "../authentication/ReLoginError";
 import Bills from "../bill-main/bills";
+import Dashboard from "../dashboard/dashboard";
 
 const Home = ({ startLoading, stopLoading }) => {
   const user = useSelector((store) => store.UserInfo.user);
@@ -17,7 +18,7 @@ const Home = ({ startLoading, stopLoading }) => {
     localStorage.setItem("activeSection", activeSection);
   }, [activeSection]);
 
-  const sections = ["Home", "Bills", "Quotations", "Estimate Invoice"];
+  const sections = ["Dashboard", "Bills", "Quotations", "Estimate Invoice"];
   return user.length ? (
     <div className="flex justify-start items-start  w-full ">
       <aside className="h-screen p-5 w-72 bg-neutral-200 pt-24 shadow ">
@@ -43,16 +44,7 @@ const Home = ({ startLoading, stopLoading }) => {
         </nav>
       </aside>
       <main className="bg-neutral-100 w-full h-screen pt-16">
-        {activeSection === "Home" && (
-          <div>
-            <h1 className="text-2xl font-bold text-center pt-20">
-              Welcome to SwiftQuote
-            </h1>
-            <p className="text-center mt-4">
-              Your one-stop solution for managing bills and quotations.
-            </p>
-          </div>
-        )}
+        {activeSection === "Dashboard" && <Dashboard />}
         {activeSection === "Bills" && <Bills />}
       </main>
     </div>

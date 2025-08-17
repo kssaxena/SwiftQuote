@@ -48,14 +48,14 @@ function App() {
   }, []);
 
   return reloginFailed ? (
-    <div className="font-montserrat">
+    <div className="font-montserrat no-scrollbar">
       <Header />
       <Routes>
         <Route path="/" element={<ReLoginError />} />
       </Routes>
     </div>
   ) : (
-    <div className="font-montserrat">
+    <div className="font-montserrat no-scrollbar">
       <Header />
       <Routes>
         <Route path="/" element={<Home />} />
