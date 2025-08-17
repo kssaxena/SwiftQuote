@@ -138,4 +138,89 @@ const getUserAllInvoices = asyncHandler(async (req, res) => {
     .json(new ApiResponse(200, { invoices }, "Invoices fetched successfully"));
 });
 
-export { createInvoice, getUserAllInvoices };
+const getInvoiceById = asyncHandler(async (req, res) => {
+  const { invoiceId } = req.params;
+
+  if (!invoiceId) {
+    throw new ApiError(400, "Invoice ID is required");
+  }
+
+  const invoice = await Invoice.findById(invoiceId).populate();
+  // populate will also return user info (name, email). Remove if not needed.
+
+  if (!invoice) {
+    throw new ApiError(404, "Invoice not found");
+  }
+
+  return res
+    .status(200)
+    .json(new ApiResponse(200, { invoice }, "Invoice fetched successfully"));
+});
+
+// Update an invoice by ID
+// const updateInvoice = asyncHandler(async (req, res) => {
+//   const { invoiceId } = req.params;
+
+//   if (!invoiceId) {
+//     throw new ApiError(400, "Invoice ID is required");
+//   }
+
+//   // Parse items from request body (since they come as JSON string in FormData)
+//   let items = [];
+//   try {
+//     items = JSON.parse(req.body.items || "[]");
+//   } catch (err) {
+//     throw new ApiError(400, "Invalid items format");
+//   }
+
+//   // Collect all fields (only update if provided)
+//   const updateData = {
+//     customerName,
+//     customerAddress,
+//     customerPhone,
+//     customerState,
+//     invoiceNumber,
+//     invoiceDate,
+//     referenceNo,
+//     buyerOrderNo,
+//     dispatchDocNo,
+//     deliveryNote: req.body.deliveryNote,
+//     destination: req.body.destination,
+//     paymentTerms: req.body.paymentTerms,
+//     deliveryTerms: req.body.deliveryTerms,
+//     billingAmount: req.body.billingAmount,
+//     taxableValue: req.body.taxableValue,
+//     sgstValue: req.body.sgstValue,
+//     cgstValue: req.body.cgstValue,
+//     totalTax: req.body.totalTax,
+//     receivedAmount: req.body.receivedAmount,
+//     dueAmount: req.body.dueAmount,
+//   };
+
+//   if (items.length > 0) {
+//     updateData.items = items;
+//   }
+
+//   // Find and update invoice
+//   const updatedInvoice = await Invoice.findByIdAndUpdate(
+//     invoiceId,
+//     { $set: updateData },
+//     { new: true, runValidators: true }
+//   );
+
+//   if (!updatedInvoice) {
+//     throw new ApiError(404, "Invoice not found");
+//   }
+
+//   return res
+//     .status(200)
+//     .json(
+//       new ApiResponse(
+//         200,
+//         { invoice: updatedInvoice },
+//         "Invoice updated successfully"
+//       )
+//     );
+// });
+
+export { createInvoice, getUserAllInvoices, getInvoiceById };

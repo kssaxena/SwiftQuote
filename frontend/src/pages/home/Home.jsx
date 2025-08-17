@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { useSelector } from "react-redux";
 import LoadingUI from "../../components/LoadingUI";
@@ -8,7 +8,14 @@ import Bills from "../bill-main/bills";
 const Home = ({ startLoading, stopLoading }) => {
   const user = useSelector((store) => store.UserInfo.user);
 
-  const [activeSection, setActiveSection] = useState("Bills");
+  const [activeSection, setActiveSection] = useState(
+    () => localStorage.getItem("activeSection") || "Home"
+  );
+
+  // 🔹 Save active section to localStorage whenever it changes
+  useEffect(() => {
+    localStorage.setItem("activeSection", activeSection);
+  }, [activeSection]);
 
   const sections = ["Home", "Bills", "Quotations", "Estimate Invoice"];
   return user.length ? (

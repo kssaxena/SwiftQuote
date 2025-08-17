@@ -8,6 +8,7 @@ import Header from "./components/Header";
 import UserProfile from "./pages/profile/UserProfile";
 import Register from "./pages/authentication/Register";
 import ReLoginError from "./pages/authentication/ReLoginError";
+import CurrentInvoice from "./pages/current-invoice/current-invoice";
 
 function App() {
   const user = useSelector((store) => store.UserInfo.user);
@@ -60,7 +61,10 @@ function App() {
         <Route path="/" element={<Home />} />
         <Route path="/user-register" element={<Register />} />
         <Route path="/user-profile" element={<UserProfile />} />
-        <Route path="/user-profile" element={<UserProfile />} />
+        <Route
+          path="/current-invoice/:invoiceId"
+          element={<CurrentInvoice />}
+        />
       </Routes>
       {/* <Footer /> */}
     </div>

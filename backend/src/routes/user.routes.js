@@ -11,6 +11,7 @@ import { VerifyUser } from "../middlewares/auth.middlewares.js";
 import { upload } from "../middlewares/multer.middlewares.js";
 import {
   createInvoice,
+  getInvoiceById,
   getUserAllInvoices,
 } from "../controllers/invoice.controllers.js";
 
@@ -21,7 +22,6 @@ router.route("/register").post(upload.single("image"), registerUser);
 router.route("/login").post(loginUser);
 router.route("/refresh-tokens").post(VerifyUser, regenerateRefreshToken);
 
-
 // router
 //   .route("/raw-image-upload")
 //   .post(VerifyUser, upload.single("image"), RawImageUpload);
@@ -31,6 +31,7 @@ router.route("/templates/create").post(VerifyUser, generateInvoice);
 //routes for invoices
 router.route("/generate-invoice/:userId").post(VerifyUser, createInvoice);
 router.route("/get-all-invoices/:userId").get(VerifyUser, getUserAllInvoices);
+router.route("/get-invoice/:invoiceId").get(VerifyUser, getInvoiceById);
 
 //secured routes
 router.route("/logout").post(VerifyUser, LogOutUser);
