@@ -17,6 +17,11 @@ import {
   getUserAllInvoices,
   updateInvoiceById,
 } from "../controllers/invoice.controllers.js";
+import {
+  createEstimate,
+  getEstimateById,
+  getEstimatesByUserId,
+} from "../controllers/estimate.controllers.js";
 
 const router = Router();
 
@@ -42,6 +47,11 @@ router.route("/get-invoice/:invoiceId").get(VerifyUser, getInvoiceById);
 router
   .route("/update-invoice/:invoiceId/:userId")
   .post(VerifyUser, updateInvoiceById);
+
+// routes for estimates
+router.route("/create-estimate/:userId").post(VerifyUser, createEstimate);
+router.route("/get-estimates/:userId").get(VerifyUser, getEstimatesByUserId);
+router.route("/get-estimate/:estimateId").get(VerifyUser, getEstimateById);
 
 //secured routes
 router.route("/logout").post(VerifyUser, LogOutUser);

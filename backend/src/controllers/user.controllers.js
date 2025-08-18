@@ -7,7 +7,7 @@ import { UploadImages } from "../utils/imageKit.io.js";
 import { raw } from "express";
 import axios from "axios";
 import { generateInvoicePDF } from "../utils/generateInvoicePDF.js";
-import { Template } from "../models/template.models.js";
+import { Estimate } from "../models/estimate.models.js";
 
 const generateAccessAndRefreshTokens = async (userId) => {
   try {

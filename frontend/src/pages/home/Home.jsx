@@ -5,6 +5,7 @@ import LoadingUI from "../../components/LoadingUI";
 import ReLoginError from "../authentication/ReLoginError";
 import Bills from "../bill-main/bills";
 import DashboardHome from "../dashboard/dashboard-home";
+import Estimates from "../estimates/estimates";
 
 const Home = ({ startLoading, stopLoading }) => {
   const user = useSelector((store) => store.UserInfo.user);
@@ -13,9 +14,10 @@ const Home = ({ startLoading, stopLoading }) => {
     () => localStorage.getItem("activeSection") || "Dashboard"
   );
 
-  // 🔹 Save active section to localStorage whenever it changes
   useEffect(() => {
+    // startLoading();
     localStorage.setItem("activeSection", activeSection);
+    // stopLoading()
   }, [activeSection]);
 
   const sections = ["Dashboard", "Bills", "Quotations", "Estimate Invoice"];
@@ -46,11 +48,13 @@ const Home = ({ startLoading, stopLoading }) => {
       <main className="bg-neutral-100 w-full h-screen pt-16">
         {activeSection === "Dashboard" && <DashboardHome />}
         {activeSection === "Bills" && <Bills />}
+        {activeSection === "Estimate Invoice" && <Estimates />}
       </main>
     </div>
   ) : (
     <div>
       <ReLoginError />
+      {/* <LoadingUI /> */}
     </div>
   );
 };

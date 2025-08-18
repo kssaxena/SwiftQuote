@@ -1,7 +1,6 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { FetchData } from "../FetchFromApi";
 
-// 🔹 Fetch all invoices of a user
 export const fetchInvoices = createAsyncThunk(
   "invoices/fetchInvoices",
   async (userId, { rejectWithValue }) => {
@@ -17,7 +16,6 @@ export const fetchInvoices = createAsyncThunk(
   }
 );
 
-// 🔹 Fetch a single invoice by ID
 export const fetchInvoiceById = createAsyncThunk(
   "invoices/fetchInvoiceById",
   async (invoiceId, { rejectWithValue }) => {
@@ -30,7 +28,6 @@ export const fetchInvoiceById = createAsyncThunk(
   }
 );
 
-// 🔹 Create a new invoice
 export const createInvoice = createAsyncThunk(
   "invoices/createInvoice",
   async ({ userId, formData }, { rejectWithValue }) => {
@@ -39,7 +36,6 @@ export const createInvoice = createAsyncThunk(
         `users/generate-invoice/${userId}`,
         "post",
         formData
-        // true
       );
       return response.data.data.invoice;
     } catch (err) {
@@ -48,7 +44,6 @@ export const createInvoice = createAsyncThunk(
   }
 );
 
-// 🔹 Update an existing invoice
 export const updateInvoice = createAsyncThunk(
   "invoices/updateInvoice",
   async ({ invoiceId, formData, userId }, { rejectWithValue }) => {
@@ -56,9 +51,8 @@ export const updateInvoice = createAsyncThunk(
       console.log(invoiceId);
       const response = await FetchData(
         `users/update-invoice/${invoiceId}/${userId}`,
-        "post", // or "put" depending on your backend
+        "post",
         formData
-        // true
       );
       console.log(response);
       return response.data.data;
@@ -68,7 +62,6 @@ export const updateInvoice = createAsyncThunk(
   }
 );
 
-// 🔹 Delete an invoice
 export const deleteInvoice = createAsyncThunk(
   "invoices/deleteInvoice",
   async (invoiceId, { rejectWithValue }) => {
@@ -77,7 +70,7 @@ export const deleteInvoice = createAsyncThunk(
         `users/delete-invoice/${invoiceId}`,
         "delete"
       );
-      return invoiceId; // return only the id so we can remove it locally
+      return invoiceId;
     } catch (err) {
       return rejectWithValue(err.response?.data || "Failed to delete invoice");
     }
@@ -88,7 +81,7 @@ const InvoiceSlice = createSlice({
   name: "invoices",
   initialState: {
     invoices: [],
-    currentInvoice: null, // store invoice when fetching by ID
+    currentInvoice: null,
     loading: false,
     error: null,
   },
@@ -101,7 +94,6 @@ const InvoiceSlice = createSlice({
     },
   },
   extraReducers: (builder) => {
-    // Fetch invoices
     builder
       .addCase(fetchInvoices.pending, (state) => {
         state.loading = true;
@@ -116,7 +108,6 @@ const InvoiceSlice = createSlice({
         state.error = action.payload;
       });
 
-    // Fetch single invoice
     builder
       .addCase(fetchInvoiceById.pending, (state) => {
         state.loading = true;
@@ -131,7 +122,6 @@ const InvoiceSlice = createSlice({
         state.error = action.payload;
       });
 
-    // Create invoice
     builder
       .addCase(createInvoice.pending, (state) => {
         state.loading = true;
@@ -146,7 +136,6 @@ const InvoiceSlice = createSlice({
         state.error = action.payload;
       });
 
-    // Update invoice
     builder
       .addCase(updateInvoice.pending, (state) => {
         state.loading = true;
@@ -168,7 +157,6 @@ const InvoiceSlice = createSlice({
         state.error = action.payload;
       });
 
-    // Delete invoice
     builder
       .addCase(deleteInvoice.pending, (state) => {
         state.loading = true;

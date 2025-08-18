@@ -23,6 +23,13 @@ const UserProfile = ({ startLoading, stopLoading }) => {
   };
   const [isActive, setIsActive] = useState(false);
   const user = useSelector((store) => store.UserInfo.user);
+  // useEffect(() => {
+  //   if (!user) {
+  //     startLoading;
+  //   } else {
+  //     stopLoading;
+  //   }
+  // });
   const { invoices, loading, error } = useSelector((state) => state.Invoices);
   useEffect(() => {
     // startLoading();
