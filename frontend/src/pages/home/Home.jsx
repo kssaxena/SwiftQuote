@@ -4,14 +4,13 @@ import { useSelector } from "react-redux";
 import LoadingUI from "../../components/LoadingUI";
 import ReLoginError from "../authentication/ReLoginError";
 import Bills from "../bill-main/bills";
-import Dashboard from "../dashboard/dashboard";
 import DashboardHome from "../dashboard/dashboard-home";
 
 const Home = ({ startLoading, stopLoading }) => {
   const user = useSelector((store) => store.UserInfo.user);
 
   const [activeSection, setActiveSection] = useState(
-    () => localStorage.getItem("activeSection") || "Home"
+    () => localStorage.getItem("activeSection") || "Dashboard"
   );
 
   // 🔹 Save active section to localStorage whenever it changes
@@ -46,7 +45,6 @@ const Home = ({ startLoading, stopLoading }) => {
       </aside>
       <main className="bg-neutral-100 w-full h-screen pt-16">
         {activeSection === "Dashboard" && <DashboardHome />}
-        {/* {activeSection === "Dashboard" && <Dashboard />} */}
         {activeSection === "Bills" && <Bills />}
       </main>
     </div>

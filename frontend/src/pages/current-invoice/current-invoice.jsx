@@ -18,7 +18,7 @@ const CurrentInvoice = ({ startLoading, stopLoading }) => {
   const dispatch = useDispatch();
   const user = useSelector((store) => store.UserInfo.user[0]);
   const userId = user?._id;
-  // console.log(user?._id);
+  console.log(user);
   const { currentInvoice, loading, error } = useSelector(
     (state) => state.Invoices
   );
@@ -354,14 +354,26 @@ const CurrentInvoice = ({ startLoading, stopLoading }) => {
               correct.
             </p>
             <div className="mt-6 flex justify-between">
-              <p className="text-xs">
-                Terms & Conditions: <br />
-                1. Goods once sold will not be taken back <br />
-                2. Delivery only at ground floor <br />
-                3. Visiting charges after 2 free service <br />
-                4. 1 Year Warranty <br />
-                5. Opening shall be provided by customer
-              </p>
+              <div>
+                <p className="text-xs">
+                  Terms & Conditions: <br />
+                </p>
+                <ul>
+                  {user?.termsAndConditions?.descriptions?.map(
+                    (item, index) => (
+                      <li
+                        key={index}
+                        className="text-xs text-gray-700 flex gap-2 items-start"
+                      >
+                        <span className="font-medium text-gray-600">
+                          {index + 1}.
+                        </span>
+                        <span>{item}</span>
+                      </li>
+                    )
+                  )}
+                </ul>
+              </div>
               <div className="text-right">
                 <p>for {user?.businessName}</p>
                 <p className="mt-10">Authorised Signatory</p>

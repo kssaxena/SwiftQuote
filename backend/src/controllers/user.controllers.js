@@ -378,6 +378,78 @@ const generateInvoice = asyncHandler(async (req, res) => {
   res.status(200).send(pdfBuffer);
 });
 
+const createTermsCondition = asyncHandler(async (req, res) => {
+  const userId = req.user?._id || req.params.userId; // adapt based on auth system
+  if (!userId) {
+    throw new ApiError(401, "Unauthorized: User ID missing");
+  }
+
+  let items = [];
+  try {
+    items = JSON.parse(req.body.items || "[]");
+  } catch (err) {
+    throw new ApiError(400, "Invalid items format");
+  }
+
+  if (!items.length) {
+    throw new ApiError(400, "At least one item is required");
+  }
+
+  // Extract only descriptions from items
+  const descriptions = items.map((i) => i.description);
+
+  // Find user
+  const user = await User.findById(userId);
+  if (!user) {
+    throw new ApiError(404, "User not found");
+  }
+
+  // Overwrite or initialize
+  user.termsAndConditions = {
+    descriptions,
+  };
+
+  await user.save();
+
+  res
+    .status(201)
+    .json(
+      new ApiResponse(
+        201,
+        user.termsAndConditions,
+        "Terms & Conditions saved successfully"
+      )
+    );
+});
+
+const updateTermsCondition = asyncHandler(async (req, res) => {
+  const { userId } = req.params;
+  let items = [];
+  try {
+    items = JSON.parse(req.body.items || "[]");
+  } catch (err) {
+    throw new ApiError(400, "Invalid items format");
+  }
+
+  if (!items.length) {
+    throw new ApiError(400, "At least one term is required");
+  }
+
+  const descriptions = items.map((i) => i.description);
+
+  const user = await User.findById(userId);
+  if (!user) throw new ApiError(404, "User not found");
+
+  user.termsAndConditions = { descriptions };
+  await user.save();
+
+  res
+    .status(200)
+    .json(
+      new ApiResponse(200, user.termsAndConditions, "Updated successfully")
+    );
+});
+
 export {
   registerUser,
   loginUser,
@@ -385,4 +457,6 @@ export {
   regenerateRefreshToken,
   RawImageUpload,
   generateInvoice,
+  createTermsCondition,
+  updateTermsCondition,
 };

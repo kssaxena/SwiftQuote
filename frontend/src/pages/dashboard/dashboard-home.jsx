@@ -1,5 +1,11 @@
 import React, { useEffect, useState } from "react";
-import { FaFileInvoiceDollar, FaUsers, FaWallet, FaPlus } from "react-icons/fa";
+import {
+  FaFileInvoiceDollar,
+  FaUsers,
+  FaWallet,
+  FaPlus,
+  FaFileInvoice,
+} from "react-icons/fa";
 import { useDispatch, useSelector } from "react-redux";
 import InputBox from "../../components/Input";
 import { Link } from "react-router-dom";
@@ -63,7 +69,7 @@ const DashboardHome = ({ startLoading, stopLoading }) => {
       {/* Stats */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
         <StatCard
-          icon={<FaFileInvoiceDollar />}
+          icon={<FaFileInvoice />}
           label="Total Invoices"
           value={invoices?.length}
           color="text-[#7E63F4]"
@@ -77,13 +83,23 @@ const DashboardHome = ({ startLoading, stopLoading }) => {
         <StatCard
           icon={<FaWallet />}
           label="Revenue"
-          value={totalBillingAmount.toFixed(2)}
+          value={
+            <h1 className="flex justify-center items-center">
+              <MdCurrencyRupee />
+              {totalBillingAmount.toFixed(2)}
+            </h1>
+          }
           color="text-[#7E63F4]"
         />
         <StatCard
-          icon={<FaFileInvoiceDollar />}
+          icon={<FaFileInvoice />}
           label="Pending"
-          value={totalDueAmount.toFixed(2)}
+          value={
+            <h1 className="flex justify-center items-center">
+              <MdCurrencyRupee />
+              {totalDueAmount.toFixed(2)}
+            </h1>
+          }
           color="text-red-500"
         />
       </div>

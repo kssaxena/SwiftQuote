@@ -61,6 +61,14 @@ const userSchema = new mongoose.Schema(
       // unique: true,
     },
 
+    termsAndConditions: {
+      descriptions: [
+        {
+          type: String,
+        },
+      ],
+    },
+
     // Images
     image: [
       {
