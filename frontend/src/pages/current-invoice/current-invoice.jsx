@@ -33,6 +33,7 @@ const CurrentInvoice = ({ startLoading, stopLoading }) => {
     customerName: "",
     customerAddress: "",
     customerPhone: "",
+    customerGST: "",
     customerState: "",
     invoiceNumber: "",
     invoiceDate: "",
@@ -65,6 +66,7 @@ const CurrentInvoice = ({ startLoading, stopLoading }) => {
       customerName: inv?.customerName || "",
       customerAddress: inv?.customerAddress || "",
       customerPhone: inv?.customerPhone || "",
+      customerGST: inv?.customerGST || "",
       customerState: inv?.customerState || "",
       invoiceNumber: inv?.invoiceNumber || "",
       invoiceDate: inv?.invoiceDate ? formatDateForInput(inv.invoiceDate) : "", // fallback if you store createdAt only
@@ -82,6 +84,7 @@ const CurrentInvoice = ({ startLoading, stopLoading }) => {
         description: it.description || "",
         size: it.size || "",
         qty: Number(it.qty || 0),
+        color: it.color || "",
         rate: Number(it.rate || 0),
         amount: Number(it.amount || 0),
       }))
@@ -153,7 +156,7 @@ const CurrentInvoice = ({ startLoading, stopLoading }) => {
   const addItem = () => {
     setItems((prev) => [
       ...prev,
-      { description: "", size: "", qty: 1, rate: 0, amount: 0 },
+      { description: "", size: "", color: "", qty: 1, rate: 0, amount: 0 },
     ]);
   };
 
@@ -261,6 +264,7 @@ const CurrentInvoice = ({ startLoading, stopLoading }) => {
               </p>
               <p className="border-b">{currentInvoice?.customerAddress}</p>
               <p className="border-b">Phone: {currentInvoice?.customerPhone}</p>
+              <p className="border-b">GSTIN: {currentInvoice?.customerGST}</p>
               <p>State: {currentInvoice?.customerState}</p>
             </div>
             <div>
@@ -270,6 +274,7 @@ const CurrentInvoice = ({ startLoading, stopLoading }) => {
               </p>
               <p className="border-b">{currentInvoice?.customerAddress}</p>
               <p className="border-b">Phone: {currentInvoice?.customerPhone}</p>
+              <p className="border-b">GSTIN: {currentInvoice?.customerGST}</p>
               <p>State: {currentInvoice?.customerState}</p>
             </div>
           </section>
@@ -363,6 +368,21 @@ const CurrentInvoice = ({ startLoading, stopLoading }) => {
               </div>
             </div>
           </section>
+
+          <footer className="print-footer border-t">
+            <p className="mt-2 text-[8px] flex justify-center items-center ">
+              This is a{" "}
+              <span>
+                <h1 className="bg-white text-black/80 font-bold p-2 rounded-xl select-none w-fit  tracking-normal">
+                  Swift{" "}
+                  <span className="color-purple text-white p-1 rounded-xl">
+                    Quote
+                  </span>
+                </h1>
+              </span>{" "}
+              generated invoice
+            </p>
+          </footer>
         </div>
         {isEditOpen && (
           <div className="fixed inset-0 bg-black/50 flex justify-center items-start overflow-scroll no-scrollbar z-50">
@@ -396,6 +416,14 @@ const CurrentInvoice = ({ startLoading, stopLoading }) => {
                     Type="number"
                     Value={formData.customerPhone}
                     onChange={handleChange}
+                  />
+                  <InputBox
+                    LabelName="GST Number"
+                    Name="customerGST"
+                    Type="text"
+                    Value={formData.customerGST}
+                    onChange={handleChange}
+                    Required={false}
                   />
                   <InputBox
                     LabelName="State Name & Code"

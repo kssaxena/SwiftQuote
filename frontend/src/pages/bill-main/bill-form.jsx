@@ -12,7 +12,7 @@ const Bill_form = ({ onCancel, startLoading, stopLoading }) => {
   const formRef = useRef();
   // Goods / Items
   const [items, setItems] = useState([
-    { description: "", size: "", qty: 1, rate: 0, amount: 0 },
+    { description: "", size: "", color: "", qty: 1, rate: 0, amount: 0 },
   ]);
   // console.log(items);
 
@@ -39,8 +39,8 @@ const Bill_form = ({ onCancel, startLoading, stopLoading }) => {
 
     if (field === "qty" || field === "rate") {
       updatedItems[index].amount =
-        (Number(updatedItems[index].qty) || 0) *
-        (Number(updatedItems[index].rate) || 0);
+        (Number(updatedItems[index].qty) || "") *
+        (Number(updatedItems[index].rate) || "");
     }
 
     setItems(updatedItems);
@@ -50,7 +50,7 @@ const Bill_form = ({ onCancel, startLoading, stopLoading }) => {
   const addItem = () => {
     setItems([
       ...items,
-      { description: "", size: "", qty: 1, rate: 0, amount: 0 },
+      { description: "", size: "", color: "", qty: 1, rate: 0, amount: 0 },
     ]);
   };
 
@@ -166,31 +166,43 @@ const Bill_form = ({ onCancel, startLoading, stopLoading }) => {
         <div className="flex lg:gap-5 gap-2 lg:flex-row flex-col">
           {/* ---------- Customer Details ---------- */}
           <div className="space-y-3 border p-4 rounded-lg shadow w-full">
-            <h3 className="text-lg font-semibold">Customer Details</h3>
+            <h3 className="text-lg font-semibold">
+              Customer Details{" "}
+              <span className="text-xs text-red-600">
+                ( * Marked fields are mandatory)
+              </span>
+            </h3>
             <div className="flex justify-center items-center gap-2">
               <InputBox
-                LabelName="Customer Name"
+                LabelName="Customer Name *"
                 Type="text"
                 Placeholder="Enter Customer Name"
                 Name="customerName"
               />
 
               <InputBox
-                LabelName="Address"
+                LabelName="Address *"
                 Type="text"
                 Placeholder="Enter Address"
                 Name="customerAddress"
               />
 
               <InputBox
-                LabelName="Phone Number"
+                LabelName="Phone Number *"
                 Type="number"
                 Placeholder="Enter Phone Number"
                 Name="customerPhone"
               />
+              <InputBox
+                LabelName="GST Number"
+                Type="text"
+                Placeholder="Enter GST Number"
+                Name="customerGST"
+                Required={false}
+              />
 
               <InputBox
-                LabelName="State Name & Code"
+                LabelName="State Name & Code *"
                 Type="text"
                 Placeholder="Enter State Name & Code"
                 Name="customerState"
@@ -200,18 +212,23 @@ const Bill_form = ({ onCancel, startLoading, stopLoading }) => {
           {/* ---------- Invoice Details ---------- */}
         </div>
         <div className="space-y-3 border p-4 rounded-lg shadow">
-          <h3 className="text-lg font-semibold">Invoice Details</h3>
+          <h3 className="text-lg font-semibold">
+            Invoice Details{" "}
+            <span className="text-xs text-red-600">
+              ( * Marked fields are mandatory)
+            </span>
+          </h3>
 
           <div className="flex justify-center items-center gap-2">
             <InputBox
-              LabelName="Invoice Number"
+              LabelName="Invoice Number *"
               Type="text"
               Placeholder="Enter Invoice Number / Estimate No."
               Name="invoiceNumber"
             />
 
             <InputBox
-              LabelName="Invoice Date"
+              LabelName="Invoice Date *"
               Type="date"
               Placeholder="Select Invoice Date"
               Name="invoiceDate"
@@ -222,6 +239,7 @@ const Bill_form = ({ onCancel, startLoading, stopLoading }) => {
               Type="text"
               Placeholder="Enter Reference No. & Date"
               Name="referenceNo"
+              Required={false}
             />
 
             <InputBox
@@ -229,6 +247,7 @@ const Bill_form = ({ onCancel, startLoading, stopLoading }) => {
               Type="text"
               Placeholder="Enter Buyer's Order No."
               Name="buyerOrderNo"
+              Required={false}
             />
           </div>
 
@@ -238,6 +257,7 @@ const Bill_form = ({ onCancel, startLoading, stopLoading }) => {
               Type="text"
               Placeholder="Enter Dispatch Document No."
               Name="dispatchDocNo"
+              Required={false}
             />
 
             <InputBox
@@ -245,17 +265,18 @@ const Bill_form = ({ onCancel, startLoading, stopLoading }) => {
               Type="text"
               Placeholder="Enter Delivery Note"
               Name="deliveryNote"
+              Required={false}
             />
 
             <InputBox
-              LabelName="Destination"
+              LabelName="Destination *"
               Type="text"
               Placeholder="Enter Destination"
               Name="destination"
             />
 
             <InputBox
-              LabelName="Mode/Terms of Payment"
+              LabelName="Mode of Payment *"
               Type="text"
               Placeholder="Enter Mode/Terms of Payment"
               Name="paymentTerms"
@@ -266,7 +287,12 @@ const Bill_form = ({ onCancel, startLoading, stopLoading }) => {
         <div className="flex lg:gap-5 gap-2 lg:flex-row flex-col">
           {/* ---------- Goods / Items Section ---------- */}
           <div className="space-y-3 border p-4 rounded-lg shadow">
-            <h3 className="text-lg font-semibold">Goods / Items</h3>
+            <h3 className="text-lg font-semibold">
+              Goods / Items{" "}
+              <span className="text-xs text-red-600">
+                ( ** Marked fields are mandatory)
+              </span>
+            </h3>
 
             {items.map((item, index) => (
               <div
@@ -274,7 +300,7 @@ const Bill_form = ({ onCancel, startLoading, stopLoading }) => {
                 className="flex flex-col justify-center items-center bg-neutral-300 p-2 rounded-xl"
               >
                 <InputBox
-                  LabelName="Description"
+                  LabelName="Description *"
                   Placeholder="Item Name and Description"
                   Name={`description-${index}`}
                   Value={item.description}
@@ -284,6 +310,7 @@ const Bill_form = ({ onCancel, startLoading, stopLoading }) => {
                 />
                 <div className="flex justify-center items-center">
                   <InputBox
+                    Required={false}
                     LabelName="Size"
                     Placeholder="Size"
                     Name={`size-${index}`}
@@ -293,7 +320,7 @@ const Bill_form = ({ onCancel, startLoading, stopLoading }) => {
                     }
                   />
                   <InputBox
-                    LabelName="Qty"
+                    LabelName="Quantity *"
                     Type="number"
                     Placeholder="Qty"
                     Name={`qty-${index}`}
@@ -303,7 +330,18 @@ const Bill_form = ({ onCancel, startLoading, stopLoading }) => {
                     }
                   />
                   <InputBox
-                    LabelName="Rate"
+                    Required={false}
+                    LabelName="Color Code"
+                    Type="text"
+                    Placeholder="Color code"
+                    Name={`color-${index}`}
+                    Value={item.color}
+                    onChange={(e) =>
+                      handleItemChange(index, "color", e.target.value)
+                    }
+                  />
+                  <InputBox
+                    LabelName="Rate *"
                     Type="number"
                     Placeholder="Rate"
                     Name={`rate-${index}`}
@@ -340,7 +378,12 @@ const Bill_form = ({ onCancel, startLoading, stopLoading }) => {
 
           {/* ---------- Tax & Summary Section ---------- */}
           <div className="border p-4 rounded-lg shadow">
-            <h3 className="text-lg font-semibold">Tax & Summary</h3>
+            <h3 className="text-lg font-semibold">
+              Tax & Summary{" "}
+              <span className="text-xs text-red-600">
+                ( ** All fields are mandatory)
+              </span>
+            </h3>
 
             <InputBox
               LabelName="Total Billing Amount (incl. tax)"

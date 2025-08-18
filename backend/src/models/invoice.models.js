@@ -6,6 +6,7 @@ const itemSchema = new mongoose.Schema({
   qty: { type: Number, required: true },
   rate: { type: Number, required: true },
   amount: { type: Number, required: true },
+  color: { type: String },
 });
 
 const invoiceSchema = new mongoose.Schema(
@@ -20,6 +21,7 @@ const invoiceSchema = new mongoose.Schema(
     customerName: { type: String, required: true },
     customerAddress: { type: String, required: true },
     customerPhone: { type: String, required: true },
+    customerGST: { type: String },
     customerState: { type: String, required: true },
 
     // Invoice Details

@@ -12,6 +12,7 @@ const Login = ({ startLoading, stopLoading }) => {
   const [error, setError] = useState("");
   const handleHome = () => {
     navigate("/");
+    window.location.reload();
   };
   const Dispatch = useDispatch();
   const formRef = useRef();

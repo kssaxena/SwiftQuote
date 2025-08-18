@@ -15,6 +15,7 @@ const createInvoice = asyncHandler(async (req, res) => {
     customerAddress,
     customerPhone,
     customerState,
+    customerGST,
     invoiceNumber,
     invoiceDate,
     referenceNo,
@@ -95,6 +96,7 @@ const createInvoice = asyncHandler(async (req, res) => {
     customerName,
     customerAddress,
     customerPhone,
+    customerGST,
     customerState,
     invoiceNumber,
     invoiceDate,
@@ -198,7 +200,6 @@ const getInvoiceById = asyncHandler(async (req, res) => {
 const updateInvoiceById = asyncHandler(async (req, res) => {
   // const { invoiceId } = req.params;
   const { invoiceId, userId } = req.params;
-
 
   // If using FormData, all fields come inside req.body
   // Items will come as JSON string -> parse it
