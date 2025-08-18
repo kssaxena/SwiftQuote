@@ -255,8 +255,8 @@ const ReLoginError = ({ startLoading, stopLoading }) => {
                 type="text"
                 name="gstNumber"
                 className="w-full border border-gray-300 rounded-lg p-2 focus:outline-none focus:ring focus:ring-blue-200"
-                // pattern="^\d{2}[A-Z]{5}\d{4}[A-Z]{1}[A-Z\d]{1}[Z]{1}[A-Z\d]{1}$"
-                // title="Enter a valid 15-character GST number (e.g. 22AAAAA0000A1Z1)"
+                pattern="^\d{2}[A-Z]{5}\d{4}[A-Z]{1}[A-Z\d]{1}[Z]{1}[A-Z\d]{1}$"
+                title="Enter a valid 15-character GST number (e.g. 22AAAAA0000A1Z1)"
                 onChange={handleChange}
                 required
               />
@@ -302,9 +302,9 @@ const ReLoginError = ({ startLoading, stopLoading }) => {
                 type="text"
                 name="businessPinCode"
                 className="w-full border border-gray-300 rounded-lg p-2 focus:outline-none focus:ring focus:ring-blue-200"
-                // pattern="^[1-9][0-9]{5}$"
-                // title="Enter a valid 6-digit Indian PIN code (cannot start with 0)"
-                // maxLength={6}
+                pattern="^[1-9][0-9]{5}$"
+                title="Enter a valid 6-digit Indian PIN code (cannot start with 0)"
+                maxLength={6}
                 onChange={handleChange}
                 required
               />
@@ -480,8 +480,8 @@ const ReLoginError = ({ startLoading, stopLoading }) => {
                       type="text"
                       name="gstNumber"
                       className="w-full border border-gray-300 rounded-lg p-2 focus:outline-none focus:ring focus:ring-blue-200"
-                      // pattern="^\d{2}[A-Z]{5}\d{4}[A-Z]{1}[A-Z\d]{1}[Z]{1}[A-Z\d]{1}$"
-                      // title="Enter a valid 15-character GST number (e.g. 22AAAAA0000A1Z1)"
+                      pattern="^\d{2}[A-Z]{5}\d{4}[A-Z]{1}[A-Z\d]{1}[Z]{1}[A-Z\d]{1}$"
+                      title="Enter a valid 15-character GST number (e.g. 22AAAAA0000A1Z1)"
                       onChange={handleChange}
                       required
                     />
@@ -535,9 +535,9 @@ const ReLoginError = ({ startLoading, stopLoading }) => {
                       type="text"
                       name="businessPinCode"
                       className="w-full border border-gray-300 rounded-lg p-2 focus:outline-none focus:ring focus:ring-blue-200"
-                      // pattern="^[1-9][0-9]{5}$"
-                      // title="Enter a valid 6-digit Indian PIN code (cannot start with 0)"
-                      // maxLength={6}
+                      pattern="^[1-9][0-9]{5}$"
+                      title="Enter a valid 6-digit Indian PIN code (cannot start with 0)"
+                      maxLength={6}
                       onChange={handleChange}
                       required
                     />
