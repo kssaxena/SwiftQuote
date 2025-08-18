@@ -468,6 +468,7 @@ const CurrentInvoice = ({ startLoading, stopLoading }) => {
                     Type="text"
                     Value={formData.referenceNo}
                     onChange={handleChange}
+                    Required={false}
                   />
                   <InputBox
                     LabelName="Buyer's Order No."
@@ -475,6 +476,7 @@ const CurrentInvoice = ({ startLoading, stopLoading }) => {
                     Type="text"
                     Value={formData.buyerOrderNo}
                     onChange={handleChange}
+                    Required={false}
                   />
                   <InputBox
                     LabelName="Dispatch Document No."
@@ -482,6 +484,7 @@ const CurrentInvoice = ({ startLoading, stopLoading }) => {
                     Type="text"
                     Value={formData.dispatchDocNo}
                     onChange={handleChange}
+                    Required={false}
                   />
                   <InputBox
                     LabelName="Delivery Note"
@@ -489,6 +492,7 @@ const CurrentInvoice = ({ startLoading, stopLoading }) => {
                     Type="text"
                     Value={formData.deliveryNote}
                     onChange={handleChange}
+                    Required={false}
                   />
                   <InputBox
                     LabelName="Destination"
@@ -496,6 +500,7 @@ const CurrentInvoice = ({ startLoading, stopLoading }) => {
                     Type="text"
                     Value={formData.destination}
                     onChange={handleChange}
+                    Required={false}
                   />
                   <InputBox
                     LabelName="Mode/Terms of Payment"
@@ -503,6 +508,7 @@ const CurrentInvoice = ({ startLoading, stopLoading }) => {
                     Type="text"
                     Value={formData.paymentTerms}
                     onChange={handleChange}
+                    Required={false}
                   />
                 </div>
 
@@ -541,6 +547,17 @@ const CurrentInvoice = ({ startLoading, stopLoading }) => {
                           Value={item.qty}
                           onChange={(e) =>
                             handleItemChange(index, "qty", e.target.value)
+                          }
+                        />
+                        <InputBox
+                          Required={false}
+                          LabelName="Color Code"
+                          Type="text"
+                          Placeholder="Color code"
+                          Name={`color-${index}`}
+                          Value={item.color}
+                          onChange={(e) =>
+                            handleItemChange(index, "color", e.target.value)
                           }
                         />
                         <InputBox
