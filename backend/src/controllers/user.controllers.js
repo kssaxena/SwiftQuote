@@ -450,6 +450,65 @@ const updateTermsCondition = asyncHandler(async (req, res) => {
     );
 });
 
+const addBankDetails = asyncHandler(async (req, res) => {
+  const {
+    accountHolderName,
+    bankName,
+    accountNumber,
+    ifscCode,
+    branchName,
+    upiId,
+  } = req.body;
+  const { userId } = req.params;
+
+  if (
+    !accountHolderName ||
+    !bankName ||
+    !accountNumber ||
+    !ifscCode ||
+    !branchName
+  ) {
+    throw new ApiError(404, "All fields are required");
+  }
+  const user = await User.findById(userId);
+  if (!user) throw new ApiError(404, "User not found");
+
+  user.bankDetails = {
+    accountHolderName: accountHolderName,
+    bankName: bankName,
+    accountNumber: accountNumber,
+    ifscCode: ifscCode,
+    branchName: branchName,
+    upiId: upiId,
+  };
+  await user.save();
+  console.log(user);
+
+  res
+    .status(200)
+    .json(new ApiResponse(200, user.bankDetails, "Updated successfully"));
+});
+
+const getBankDetailsById = asyncHandler(async (req, res) => {
+  const { userId } = req.params;
+
+  if (!userId) throw new ApiError(400, "Invalid User ID");
+
+  const user = await User.findById(userId).select("bankDetails");
+
+  if (!user) throw new ApiError(404, "User Not Found");
+
+  res
+    .status(200)
+    .json(
+      new ApiResponse(
+        200,
+        user.bankDetails,
+        "Bank Details fetched successfully!"
+      )
+    );
+});
+
 export {
   registerUser,
   loginUser,
@@ -459,4 +518,6 @@ export {
   generateInvoice,
   createTermsCondition,
   updateTermsCondition,
+  addBankDetails,
+  getBankDetailsById,
 };

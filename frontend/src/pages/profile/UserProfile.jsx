@@ -13,7 +13,9 @@ import Bill_form from "../bill-main/bill-form";
 import { fetchInvoices } from "../../utils/slice/InvoiceSlice";
 import TermsAndConditionsForm from "../../components/T_C_Form";
 import { BiSupport } from "react-icons/bi";
+import BankDetails_form from "../../components/BankDetails_form";
 import { FetchData } from "../../utils/FetchFromApi";
+import EstimateForm from "../estimates/estimate-form";
 
 const UserProfile = ({ startLoading, stopLoading }) => {
   const navigate = useNavigate();
@@ -21,27 +23,41 @@ const UserProfile = ({ startLoading, stopLoading }) => {
   const handleHome = () => {
     navigate("/");
   };
-  const [isActive, setIsActive] = useState(false);
-  const user = useSelector((store) => store.UserInfo.user);
-  // useEffect(() => {
-  //   if (!user) {
-  //     startLoading;
-  //   } else {
-  //     stopLoading;
-  //   }
-  // });
-  const { invoices, loading, error } = useSelector((state) => state.Invoices);
-  useEffect(() => {
-    // startLoading();
-    if (user[0]?._id) {
-      dispatch(fetchInvoices(user[0]?._id));
-    }
-    // stopLoading();
-  }, [user, dispatch]);
-  // console.log(user);
-  const termsConditions = user[0]?.termsAndConditions;
-  // console.log(termsConditions);
   const [isOpen, setIsOpen] = useState(false);
+  const [isOpen2, setIsOpen2] = useState(false);
+  const [isActive, setIsActive] = useState(false);
+  const [isActive2, setIsActive2] = useState(false);
+  const [bankDetail, setBankDetail] = useState();
+  const user = useSelector((store) => store.UserInfo.user);
+  // console.log(user);
+
+  useEffect(() => {
+    if (user[0]?._id) {
+      stopLoading();
+      dispatch(fetchInvoices(user[0]?._id));
+    } else {
+      startLoading();
+    }
+  }, [user, dispatch]);
+
+  useEffect(() => {
+    const getBankDetails = async () => {
+      try {
+        // startLoading();
+        const response = await FetchData(
+          `users/get-bank-detail/${user[0]?._id}`,
+          "get"
+        );
+        setBankDetail(response.data.data);
+        // alert("Details fetched successfully !");
+      } catch (err) {
+        // console.log(err);
+      }
+    };
+
+    getBankDetails();
+  }, [user]);
+  // console.log(bankDetail);
 
   const personalDetails = {
     name: user[0]?.name,
@@ -65,7 +81,7 @@ const UserProfile = ({ startLoading, stopLoading }) => {
     <div className="pt-20">
       <div className="min-h-screen bg-gray-50 p-8">
         <div className="text-gray-800 mb-6 flex justify-between items-center gap-10">
-          <div className="flex justify-center items-center gap-10">
+          <div className="flex justify-center items-center gap-5 w-1/2">
             <img
               src={
                 user[0]?.image[0]?.url ||
@@ -73,6 +89,33 @@ const UserProfile = ({ startLoading, stopLoading }) => {
               }
               className="w-32 h-32 object-contain rounded-full color-purple shadow-2xl"
             />
+          </div>
+          {/* side buttons  */}
+          <div className="flex justify-center items-center gap-10">
+            <Button
+              Label={
+                <h1 className="flex flex-col justify-center items-center">
+                  <RiHome2Fill />
+                  Home
+                </h1>
+              }
+              onClick={handleHome}
+            />
+            <Button
+              Label={
+                <h1 className="flex flex-col justify-center items-center">
+                  <BiSupport />
+                  Help Desk
+                </h1>
+              }
+              onClick={handleHome}
+            />
+          </div>
+        </div>
+        {/* quick action button  */}
+        <div className="w-full flex flex-col justify-center items-start bg-white p-6 rounded-2xl shadow-md mb-8">
+          <h1>Quick Actions</h1>
+          <div className="flex gap-5 p-4 ">
             {user[0]?.termsAndConditions?.descriptions ? (
               <div className="flex justify-center items-center gap-5">
                 <Button
@@ -100,17 +143,25 @@ const UserProfile = ({ startLoading, stopLoading }) => {
                 />
               </div>
             )}
-
-            {/* <Button
-              onClick={() => setIsOpen(true)}
-              className={`text-base flex justify-center items-center `}
-              Label={
-                <h1 className={`flex justify-center items-center gap-2`}>
-                  <FaPlus />
-                  Terms and Conditions
-                </h1>
-              }
-            /> */}
+            {bankDetail ? (
+              <Button
+                Label={
+                  <h1 className="flex justify-center items-center gap-2">
+                    {<FaPencilAlt />} Bank Details
+                  </h1>
+                }
+                onClick={() => setIsOpen2(true)}
+              />
+            ) : (
+              <Button
+                Label={
+                  <h1 className="flex justify-center items-center gap-2">
+                    {<FaPlus />} Bank Details
+                  </h1>
+                }
+                onClick={() => setIsOpen2(true)}
+              />
+            )}
             <Button
               Label={
                 <h1 className="flex justify-center items-center gap-2">
@@ -119,25 +170,13 @@ const UserProfile = ({ startLoading, stopLoading }) => {
               }
               onClick={() => setIsActive(true)}
             />
-          </div>
-          <div className="flex justify-center items-center gap-10">
             <Button
               Label={
-                <h1 className="flex flex-col justify-center items-center">
-                  <RiHome2Fill />
-                  Home
+                <h1 className="flex justify-center items-center gap-2">
+                  {<FaPlus />}New Estimate
                 </h1>
               }
-              onClick={handleHome}
-            />
-            <Button
-              Label={
-                <h1 className="flex flex-col justify-center items-center">
-                  <BiSupport />
-                  Help Desk
-                </h1>
-              }
-              onClick={handleHome}
+              onClick={() => setIsActive2(true)}
             />
           </div>
         </div>
@@ -163,6 +202,38 @@ const UserProfile = ({ startLoading, stopLoading }) => {
           </div>
         </div>
 
+        {/* Banking Details */}
+        <div className="bg-white p-6 rounded-2xl shadow-md mb-8">
+          <h2 className="text-xl font-semibold text-gray-700 mb-4">
+            Banking Details
+          </h2>
+          {bankDetail ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-gray-600">
+              <div>
+                <strong>Bank Name:</strong> {bankDetail?.bankName}
+              </div>
+              <div>
+                <strong>Account Number:</strong> {bankDetail?.accountNumber}
+              </div>
+              <div>
+                <strong>Bank Branch:</strong> {bankDetail?.branchName}
+              </div>
+              <div>
+                <strong>Account Holder Name:</strong>{" "}
+                {bankDetail?.accountHolderName}
+              </div>
+              <div>
+                <strong>IFSC Code:</strong> {bankDetail?.ifscCode}
+              </div>
+              <div>
+                <strong>UPI Id:</strong> {bankDetail?.upiId}
+              </div>
+            </div>
+          ) : (
+            <div>No Banking Details</div>
+          )}
+        </div>
+
         {/* Business Details */}
         <div className="bg-white p-6 rounded-2xl shadow-md mb-8">
           <h2 className="text-xl font-semibold text-gray-700 mb-4">
@@ -176,15 +247,15 @@ const UserProfile = ({ startLoading, stopLoading }) => {
               <strong>GST Number:</strong> {businessDetails.gstNumber}
             </div>
             <div>
-              <strong>Business Address:</strong>{" "}
+              <strong>Company Address:</strong>{" "}
               {businessDetails.businessAddress}
             </div>
             <div>
-              <strong>Business Contact:</strong>{" "}
+              <strong>Company Contact:</strong>{" "}
               {businessDetails.businessContact}
             </div>
             <div>
-              <strong>Business Email:</strong> {businessDetails.businessEmail}
+              <strong>Company Email:</strong> {businessDetails.businessEmail}
             </div>
             <div>
               <strong>City:</strong> {businessDetails.businessCity}
@@ -220,23 +291,36 @@ const UserProfile = ({ startLoading, stopLoading }) => {
           </div>
         </div>
       </div>
-      {/* <AnimatePresence>
-        {isOpen && (
+      <AnimatePresence>
+        {isActive2 && (
           <motion.div
             initial={{ opacity: 0, scale: 0.1 }}
             animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0, scale: 0.1 }}
             transition={{ duration: 0.4, ease: "easeInOut" }}
-            className="fixed top-0 left-0 flex flex-col  justify-center items-center backdrop-blur-3xl w-full h-full"
+            className="fixed h-screen w-screen top-0 left-0 bg-white lg:p-20 p-5 z-20 overflow-auto no-scrollbar"
           >
-            <Button
-              onClick={() => setIsOpen(false)}
-              Label={<IoMdClose className="text-xl" />}
-            />
-            <CreateTermsAndConditions />
+            <EstimateForm onCancel={() => setIsActive2(false)} />
           </motion.div>
         )}
-      </AnimatePresence> */}
+      </AnimatePresence>
+      <AnimatePresence>
+        {isOpen2 && (
+          <motion.div
+            initial={{ opacity: 0, scale: 0.1 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.1 }}
+            transition={{ duration: 0.4, ease: "easeInOut" }}
+            className="fixed top-0 left-0 flex flex-col justify-center items-center backdrop-blur-3xl w-full h-full z-20"
+          >
+            <Button
+              onClick={() => setIsOpen2(false)}
+              Label={<IoMdClose className="text-xl" />}
+            />
+            <BankDetails_form onClose={() => setIsOpen2(false)} />
+          </motion.div>
+        )}
+      </AnimatePresence>
       <AnimatePresence>
         {isOpen && (
           <motion.div
@@ -244,7 +328,7 @@ const UserProfile = ({ startLoading, stopLoading }) => {
             animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0, scale: 0.1 }}
             transition={{ duration: 0.4, ease: "easeInOut" }}
-            className="fixed top-0 left-0 flex flex-col justify-center items-center backdrop-blur-3xl w-full h-full"
+            className="fixed top-0 left-0 flex flex-col justify-center items-center backdrop-blur-3xl w-full h-full z-20 py-20"
           >
             <Button
               onClick={() => setIsOpen(false)}

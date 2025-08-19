@@ -60,6 +60,14 @@ const userSchema = new mongoose.Schema(
       required: true,
       // unique: true,
     },
+    bankDetails: {
+      accountHolderName: { type: String },
+      bankName: { type: String },
+      accountNumber: { type: Number },
+      ifscCode: { type: String },
+      branchName: { type: String },
+      upiId: { type: String },
+    },
 
     termsAndConditions: {
       descriptions: [

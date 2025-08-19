@@ -268,6 +268,7 @@ const RegistrationForm = ({ startLoading, stopLoading }) => {
           <Button Label="Register" type="submit" />
           <Button
             Label="Cancel"
+            type={"reset"}
             onClick={handleHome}
             className={`hover:bg-red-600`}
           />

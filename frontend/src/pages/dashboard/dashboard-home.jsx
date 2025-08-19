@@ -15,18 +15,25 @@ import { AnimatePresence, motion } from "framer-motion";
 import Bill_form from "../bill-main/bill-form";
 import LoadingUI from "../../components/LoadingUI";
 import { fetchInvoices } from "../../utils/slice/InvoiceSlice";
+import { fetchEstimates } from "../../utils/slice/EstimateSlice";
+import EstimateForm from "../estimates/estimate-form";
 
 const DashboardHome = ({ startLoading, stopLoading }) => {
   const dispatch = useDispatch();
   const [isActive, setIsActive] = useState(false);
+  const [isActive2, setIsActive2] = useState(false);
   const user = useSelector((store) => store.UserInfo.user[0]);
   const { invoices, loading, error } = useSelector((state) => state.Invoices);
+  const { estimates } = useSelector((state) => state.Estimates);
+  console.log(estimates);
   useEffect(() => {
-    // startLoading();
+    stopLoading();
     if (user?._id) {
       dispatch(fetchInvoices(user._id));
+      dispatch(fetchEstimates(user._id));
+    } else {
+      startLoading();
     }
-    // stopLoading();
   }, [user, dispatch]);
   const TableHeaders = [
     "Client",
@@ -76,8 +83,9 @@ const DashboardHome = ({ startLoading, stopLoading }) => {
         />
         <StatCard
           icon={<FaUsers />}
-          label="Clients"
-          value="36"
+          label="Estimates"
+          value={estimates?.length}
+          // value="36"
           color="text-[#7E63F4]"
         />
         <StatCard
@@ -115,6 +123,14 @@ const DashboardHome = ({ startLoading, stopLoading }) => {
               </h1>
             }
             onClick={() => setIsActive(true)}
+          />
+          <Button
+            Label={
+              <h1 className="flex justify-center items-center gap-2">
+                {<FaPlus />}New Estimate
+              </h1>
+            }
+            onClick={() => setIsActive2(true)}
           />
         </div>
       </div>
@@ -198,6 +214,19 @@ const DashboardHome = ({ startLoading, stopLoading }) => {
           </table>
         </div>
       </div>
+      <AnimatePresence>
+        {isActive2 && (
+          <motion.div
+            initial={{ opacity: 0, scale: 0.1 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.1 }}
+            transition={{ duration: 0.4, ease: "easeInOut" }}
+            className="fixed h-screen w-screen top-0 left-0 bg-white lg:p-20 p-5 z-20 overflow-auto no-scrollbar"
+          >
+            <EstimateForm onCancel={() => setIsActive2(false)} />
+          </motion.div>
+        )}
+      </AnimatePresence>
       <AnimatePresence>
         {isActive && (
           <motion.div

@@ -8,6 +8,8 @@ import {
   generateInvoice,
   createTermsCondition,
   updateTermsCondition,
+  addBankDetails,
+  getBankDetailsById,
 } from "../controllers/user.controllers.js";
 import { VerifyUser } from "../middlewares/auth.middlewares.js";
 import { upload } from "../middlewares/multer.middlewares.js";
@@ -30,6 +32,8 @@ router.route("/register").post(upload.single("image"), registerUser);
 router.route("/login").post(loginUser);
 router.route("/refresh-tokens").post(VerifyUser, regenerateRefreshToken);
 router.route("/add-terms-condition").post(VerifyUser, createTermsCondition);
+router.route("/add-bank-detail/:userId").post(VerifyUser, addBankDetails);
+router.route("/get-bank-detail/:userId").get(VerifyUser, getBankDetailsById);
 router
   .route("/update-terms-condition/:userId")
   .post(VerifyUser, updateTermsCondition);

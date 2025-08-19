@@ -105,6 +105,7 @@ const Login = ({ startLoading, stopLoading }) => {
           <Button Label="Login" type="submit" className={` w-full`} />
           <Button
             Label="Cancel"
+            type={"reset"}
             onClick={() => window.location.reload()}
             className={`hover:bg-red-600 w-full`}
           />

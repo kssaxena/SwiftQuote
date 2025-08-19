@@ -20,7 +20,7 @@ const Home = ({ startLoading, stopLoading }) => {
     // stopLoading()
   }, [activeSection]);
 
-  const sections = ["Dashboard", "Bills", "Quotations", "Estimate Invoice"];
+  const sections = ["Dashboard", "Bills", "Estimate Invoice"];
   return user.length ? (
     <div className="flex justify-start items-start  w-full ">
       <aside className="h-screen p-5 w-72 bg-neutral-200 pt-24 shadow ">

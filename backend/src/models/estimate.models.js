@@ -7,44 +7,45 @@ const estimateSchema = new mongoose.Schema(
       ref: "User",
       required: true,
     },
-    estimateNumber: { type: String, required: true },
-    referenceNo: String,
-    buyerOrderNo: String,
-    dispatchDocNo: String,
-    deliveryNote: String,
-    destination: String,
-    paymentTerms: String,
-    deliveryTerms: String,
 
     // Customer Details
     customerName: { type: String, required: true },
-    customerAddress: String,
-    customerPhone: String,
-    customerState: String,
+    customerAddress: { type: String, required: true },
+    customerPhone: { type: String, required: true },
+    customerGST: { type: String },
+    customerState: { type: String, required: true },
 
-    // Items
+    // Estimate Details
+    estimateNumber: { type: String, required: true },
+    estimateDate: { type: Date, required: true },
+    validUntil: { type: Date, required: true },
+    referenceNo: { type: String },
+    buyerOrderNo: { type: String },
+    dispatchDocNo: { type: String },
+    deliveryNote: { type: String },
+    destination: { type: String, required: true },
+    paymentTerms: { type: String, required: true },
+
+    // Goods/Items
     items: [
       {
-        description: String,
-        size: String,
-        qty: Number,
-        rate: Number,
-        amount: Number,
+        description: { type: String, required: true },
+        size: { type: String },
+        color: { type: String },
+        qty: { type: Number, required: true },
+        rate: { type: Number, required: true },
+        amount: { type: Number, required: true },
       },
     ],
 
-    // Billing
-    taxableValue: Number,
-    sgstValue: Number,
-    cgstValue: Number,
-    totalTax: Number,
-    billingAmount: Number,
-    receivedAmount: Number,
-    dueAmount: Number,
-    amountInWords: String,
-
-    validUntil: Date, // ✅ extra field for estimate
-    pdfUrl: String,
+    // Tax & Summary
+    billingAmount: { type: Number, required: true },
+    taxableValue: { type: Number, required: true },
+    sgst: { type: Number, required: true },
+    cgst: { type: Number, required: true },
+    totalTax: { type: Number, required: true },
+    receivedAmount: { type: Number, required: true },
+    dueAmount: { type: Number, required: true },
   },
   { timestamps: true }
 );
