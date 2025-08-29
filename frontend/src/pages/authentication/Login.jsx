@@ -54,17 +54,18 @@ const Login = ({ startLoading, stopLoading }) => {
       }
     } catch (error) {
       alert(parseErrorMessage(error?.response?.data));
+      // alertError("Error! Something went wrong.");
       setError(err.response?.data?.message || "Failed to register.");
     } finally {
       stopLoading();
     }
   };
   return (
-    <div>
+    <div className="w-[90%] lg:w-fit">
       <form
         ref={formRef}
         onSubmit={handleSubmit}
-        className="bg-white p-8 rounded-xl shadow-md w-full max-w-3xl"
+        className="bg-white p-8 rounded-xl shadow-md w-full lg:max-w-3xl"
       >
         {/* Personal Details */}
         <div className="mb-6">

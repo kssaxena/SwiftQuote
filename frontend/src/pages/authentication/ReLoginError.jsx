@@ -73,12 +73,12 @@ const ReLoginError = ({ startLoading, stopLoading }) => {
 
   return (
     <div className=" bg-gray-100 flex items-center justify-center flex-col lg:py-24 pt-24 pb-10 no-scrollbar gap-20">
-      <div className="flex flex-col justify-center items-center gap-20 py-40 ">
+      <div className="flex flex-col justify-center items-center gap-20 lg:py-40 px-2 py-20">
         <motion.h1
           initial={{ y: 100, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           transition={{ duration: 0.5, delay: 0.1 }}
-          className="uppercase text-4xl text-center flex flex-col justify-center items-center gap-5 tracking-widest"
+          className="uppercase lg:text-4xl text-2xl text-center flex flex-col justify-center items-center gap-5 tracking-widest"
         >
           automate your{" "}
           <motion.span
@@ -119,7 +119,7 @@ const ReLoginError = ({ startLoading, stopLoading }) => {
           </motion.p>
         </div>
       </div>
-      <div className="flex flex-col justify-center items-center gap-20">
+      <div className="flex flex-col justify-center items-center lg:gap-20">
         <BillingHighlights />
         <FAQSection />
       </div>
@@ -340,14 +340,14 @@ const ReLoginError = ({ startLoading, stopLoading }) => {
             animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0, scale: 0.1 }}
             transition={{ duration: 0.4, ease: "easeInOut" }}
-            className="fixed top-0 left-0 flex justify-center items-start w-full h-full backdrop-blur-2xl pt-24 overflow-scroll"
+            className="fixed top-0 left-0 flex flex-col-reverse justify-start items-center w-full h-full backdrop-blur-2xl py-32 overflow-scroll"
           >
             <form
               ref={formRef}
               onSubmit={handleSubmit}
               className="bg-white p-8 rounded-xl shadow-md w-full max-w-3xl"
             >
-              <h1 className="flex justify-center items-center gap-10 w-full">
+              <h1 className="flex justify-center items-center lg:gap-10 gap-5 w-full">
                 Already have an account{" "}
                 <Button onClick={() => setIsOpen(true)} Label="Login" />{" "}
               </h1>

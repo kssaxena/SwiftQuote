@@ -21,7 +21,7 @@ const Header = () => {
     navigate("/");
   };
   return (
-    <div className="color-purple text-white h-20 flex justify-between items-center fixed w-full z-10">
+    <div className="color-purple text-white h-20 flex justify-center lg:justify-between items-center fixed w-full z-10">
       <button onClick={handleHome} className=" px-20">
         <motion.img
           initial={{ y: -100, opacity: 1 }}
@@ -45,7 +45,7 @@ const Header = () => {
           initial={{ y: -100, opacity: 1 }}
           animate={{ y: 0, opacity: 1 }}
           transition={{ duration: 0.5, delay: 0.5 }}
-          className="flex justify-center items-center gap-5 px-20"
+          className="lg:flex justify-center items-center gap-5 px-20 hidden"
         >
           <button
             onClick={handleProfile}
@@ -78,7 +78,7 @@ const Header = () => {
           </div>
         </motion.div>
       ) : (
-        <div className=" px-20">
+        <div className=" px-20 lg:flex hidden">
           <button>
             <h1 className="flex justify-center items-center text-xl gap-5">
               <FaAddressCard />
