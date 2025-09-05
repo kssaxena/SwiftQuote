@@ -156,7 +156,7 @@ const Bill_form = ({ onCancel, startLoading, stopLoading }) => {
   return (
     <div className="flex justify-center items-center ">
       <form
-        className="space-y-6"
+        className="space-y-6 w-screen"
         ref={formRef}
         onSubmit={handleGenerateInvoice}
       >
@@ -166,13 +166,13 @@ const Bill_form = ({ onCancel, startLoading, stopLoading }) => {
         <div className="flex lg:gap-5 gap-2 lg:flex-row flex-col">
           {/* ---------- Customer Details ---------- */}
           <div className="space-y-3 border p-4 rounded-lg shadow w-full">
-            <h3 className="text-lg font-semibold">
+            <h3 className="text-lg font-semibold flex-col flex ">
               Customer Details{" "}
               <span className="text-xs text-red-600">
                 ( * Marked fields are mandatory)
               </span>
             </h3>
-            <div className="flex justify-center items-center gap-2">
+            <div className="flex justify-center items-center lg:gap-2 lg:flex-row flex-col">
               <InputBox
                 LabelName="Customer Name *"
                 Type="text"
@@ -212,14 +212,14 @@ const Bill_form = ({ onCancel, startLoading, stopLoading }) => {
           {/* ---------- Invoice Details ---------- */}
         </div>
         <div className="space-y-3 border p-4 rounded-lg shadow">
-          <h3 className="text-lg font-semibold">
+          <h3 className="text-lg font-semibold flex flex-col">
             Invoice Details{" "}
             <span className="text-xs text-red-600">
               ( * Marked fields are mandatory)
             </span>
           </h3>
 
-          <div className="flex justify-center items-center gap-2">
+          <div className="flex justify-center items-center lg:gap-2  lg:flex-row flex-col">
             <InputBox
               LabelName="Invoice Number *"
               Type="text"
@@ -251,7 +251,7 @@ const Bill_form = ({ onCancel, startLoading, stopLoading }) => {
             />
           </div>
 
-          <div className="flex justify-center items-center gap-2">
+          <div className="flex justify-center items-center lg:gap-2  lg:flex-row flex-col">
             <InputBox
               LabelName="Dispatch Document No."
               Type="text"
@@ -287,7 +287,7 @@ const Bill_form = ({ onCancel, startLoading, stopLoading }) => {
         <div className="flex lg:gap-5 gap-2 lg:flex-row flex-col">
           {/* ---------- Goods / Items Section ---------- */}
           <div className="space-y-3 border p-4 rounded-lg shadow">
-            <h3 className="text-lg font-semibold">
+            <h3 className="text-lg font-semibold flex flex-col">
               Goods / Items{" "}
               <span className="text-xs text-red-600">
                 ( ** Marked fields are mandatory)
@@ -308,7 +308,7 @@ const Bill_form = ({ onCancel, startLoading, stopLoading }) => {
                     handleItemChange(index, "description", e.target.value)
                   }
                 />
-                <div className="flex justify-center items-center">
+                <div className="flex justify-center items-center  lg:flex-row flex-col">
                   <InputBox
                     Required={false}
                     LabelName="Size"
