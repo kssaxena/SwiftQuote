@@ -15,7 +15,9 @@ const CurrentEstimate = () => {
   const dispatch = useDispatch();
   const { currentEstimate, loading } = useSelector((state) => state.Estimates);
   const user = useSelector((store) => store.UserInfo.user[0]);
-  const [bankDetail, setBankDetail] = useState();
+  // const [bankDetail, setBankDetail] = useState(user);
+  const bankDetail = user?.bankDetails;
+  console.log(bankDetail);
   const contentRef = useRef();
   const [isEditing, setIsEditing] = useState(false);
   const [editValues, setEditValues] = useState({});
@@ -45,30 +47,30 @@ const CurrentEstimate = () => {
     setIsEditing(false);
   };
 
-  useEffect(() => {
-    const getBankDetails = async () => {
-      try {
-        // startLoading();
-        const response = await FetchData(
-          `users/get-bank-detail/${user[0]?._id}`,
-          "get"
-        );
-        setBankDetail(response.data.data);
-        // alert("Details fetched successfully !");
-      } catch (err) {
-        // console.log(err);
-      }
-    };
+  // useEffect(() => {
+  //   const getBankDetails = async () => {
+  //     try {
+  //       // startLoading();
+  //       const response = await FetchData(
+  //         `users/get-bank-detail/${user[0]?._id}`,
+  //         "get"
+  //       );
+  //       setBankDetail(response.data.data);
+  //       // alert("Details fetched successfully !");
+  //     } catch (err) {
+  //       // console.log(err);
+  //     }
+  //   };
 
-    getBankDetails();
-  }, [user]);
+  //   getBankDetails();
+  // }, [user]);
 
   if (loading) return <p>Loading...</p>;
 
   return (
     <div className="py-20 w-full px-20">
       {/* ---------- Top Controls ---------- */}
-      <div className="flex justify-between items-center px-6">
+      <div className="flex justify-between items-center px-6 py-5">
         <h2 className="text-xl font-semibold">
           Estimate #{currentEstimate?.estimateNumber}
         </h2>
@@ -85,11 +87,14 @@ const CurrentEstimate = () => {
       {/* ---------- Printable Invoice ---------- */}
       <div
         ref={contentRef}
-        className="bg-white shadow-lg rounded-lg p-6 mt-6 text-xs border "
+        className="bg-white  rounded-lg p-6 mt-6 text-xs "
       >
         {/* ---------- Header ---------- */}
         <header className="border-b pb-4 text-center border p-2 rounded-xl">
-          <h1 className="text-2xl font-bold uppercase">Estimate Invoice</h1>
+          <div>
+            <img src={user?.image[0]?.url} className="w-10 rounded-full" />
+            <h1 className="text-2xl font-bold uppercase">Estimate Invoice</h1>
+          </div>
           <h2 className=" font-semibold mt-2">{user?.businessName}</h2>
           <p>
             {user?.businessAddress}, {user?.businessState}
@@ -253,7 +258,7 @@ const CurrentEstimate = () => {
         </div>
         {/* footer  */}
         <footer className="print-footer border-t">
-          <p className="mt-2 text-[8px] flex justify-center items-center ">
+          <div className="mt-2 text-[8px] flex justify-center items-center ">
             This is a{" "}
             <span>
               <h1 className="bg-white text-black/80 font-bold p-2 rounded-xl select-none w-fit  tracking-normal">
@@ -264,7 +269,7 @@ const CurrentEstimate = () => {
               </h1>
             </span>{" "}
             generated Estimate
-          </p>
+          </div>
         </footer>
       </div>
     </div>

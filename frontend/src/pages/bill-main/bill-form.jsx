@@ -292,6 +292,10 @@ const Bill_form = ({ onCancel, startLoading, stopLoading }) => {
               <span className="text-xs text-red-600">
                 ( ** Marked fields are mandatory)
               </span>
+              <span className="text-xs text-red-600 text-justify">
+                ( ** Just enter the MRP of the product which is getting billed,
+                rest will be calculated automatically.)
+              </span>
             </h3>
 
             {items.map((item, index) => (
@@ -341,8 +345,8 @@ const Bill_form = ({ onCancel, startLoading, stopLoading }) => {
                     }
                   />
                   <InputBox
-                    LabelName="Rate *"
-                    Type="number"
+                    LabelName="Enter the Product MRP *"
+                    // Type="number"
                     Placeholder="Rate"
                     Name={`rate-${index}`}
                     Value={item.rate}
@@ -386,8 +390,8 @@ const Bill_form = ({ onCancel, startLoading, stopLoading }) => {
             </h3>
 
             <InputBox
-              LabelName="Total Billing Amount (incl. tax)"
-              Type="number"
+              LabelName="Total Amount"
+              // Type="number"
               Placeholder="Enter Total Billing Amount"
               Name="billingAmount"
               Value={billingAmount}

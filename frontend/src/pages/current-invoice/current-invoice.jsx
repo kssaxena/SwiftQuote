@@ -9,16 +9,17 @@ import InputBox from "../../components/Input";
 import Button from "../../components/Button";
 import { useReactToPrint } from "react-to-print";
 import LoadingUI from "../../components/LoadingUI";
+import numberToWords from "number-to-words";
 
 const sgstRate = 9;
 const cgstRate = 9;
 
 const CurrentInvoice = ({ startLoading, stopLoading }) => {
   const { invoiceId } = useParams();
+
   const dispatch = useDispatch();
   const user = useSelector((store) => store.UserInfo.user[0]);
   const userId = user?._id;
-  console.log(user);
   const { currentInvoice, loading, error } = useSelector(
     (state) => state.Invoices
   );
@@ -194,6 +195,7 @@ const CurrentInvoice = ({ startLoading, stopLoading }) => {
 
   // ---------- Render ----------
   const currentProducts = currentInvoice?.items;
+  const words = numberToWords.toWords(currentInvoice?.billingAmount || 0);
 
   return (
     <div className="py-20 w-full ">
@@ -209,8 +211,11 @@ const CurrentInvoice = ({ startLoading, stopLoading }) => {
           className="flex flex-col gap-6 p-4 mt-10 bg-white shadow-lg rounded-lg w-[95%] mx-auto text-xs border"
         >
           {/* ---------- Header ---------- */}
-          <header className="border-b py-2 px-1 text-center border ">
-            <h1 className="text-2xl font-bold uppercase">Tax Invoice</h1>
+          <header className="border-b py-2 px-1 text-center border">
+            <div>
+              <img src={user?.image[0]?.url} className="w-10 rounded-full" />
+              <h1 className="text-2xl font-bold uppercase">Tax Invoice</h1>
+            </div>
             <h2 className=" font-semibold mt-2">{user?.businessName}</h2>
             <p>
               {user?.businessAddress}, {user?.businessState}
@@ -226,7 +231,7 @@ const CurrentInvoice = ({ startLoading, stopLoading }) => {
                   <strong>Invoice No.:</strong> {currentInvoice?.invoiceNumber}
                 </p>
                 <p className="border-b">
-                  <strong>Dated:</strong>{" "}
+                  <strong>Dated(MMDDYY):</strong>{" "}
                   {new Date(currentInvoice?.createdAt).toLocaleDateString()}
                 </p>
                 <p className="border-b">
@@ -344,9 +349,9 @@ const CurrentInvoice = ({ startLoading, stopLoading }) => {
 
           {/* ---------- Declaration & Signature ---------- */}
           <section className="mt-6 text-xs">
-            <p>
-              <strong>Amount Chargeable (in words):</strong>{" "}
-              {currentInvoice?.amountInWords}
+            <p className="capitalize">
+              <strong>Amount Chargeable (in words):</strong> {words} Rupees
+              only.
             </p>
             <p className="mt-2">
               Declaration: We declare that this invoice shows the actual price
@@ -382,7 +387,7 @@ const CurrentInvoice = ({ startLoading, stopLoading }) => {
           </section>
 
           <footer className="print-footer border-t">
-            <p className="mt-2 text-[8px] flex justify-center items-center ">
+            <div className="mt-2 text-[8px] flex justify-center items-center ">
               This is a{" "}
               <span>
                 <h1 className="bg-white text-black/80 font-bold p-2 rounded-xl select-none w-fit  tracking-normal">
@@ -393,7 +398,7 @@ const CurrentInvoice = ({ startLoading, stopLoading }) => {
                 </h1>
               </span>{" "}
               generated invoice
-            </p>
+            </div>
           </footer>
         </div>
         {isEditOpen && (
