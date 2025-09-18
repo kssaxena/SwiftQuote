@@ -24,6 +24,13 @@ import {
   getEstimateById,
   getEstimatesByUserId,
 } from "../controllers/estimate.controllers.js";
+import {
+  createQuotation,
+  getQuotationsByUserId,
+  getQuotationById,
+  updateQuotation,
+  deleteQuotation,
+} from "../controllers/quotation.controllers.js";
 
 const router = Router();
 
@@ -56,6 +63,14 @@ router
 router.route("/create-estimate/:userId").post(VerifyUser, createEstimate);
 router.route("/get-estimates/:userId").get(VerifyUser, getEstimatesByUserId);
 router.route("/get-estimate/:estimateId").get(VerifyUser, getEstimateById);
+
+// routes for quotations
+router.route("/create-quotation/:userId").post(VerifyUser, createQuotation);
+router.route("/get-quotations/:userId").get(VerifyUser, getQuotationsByUserId);
+router.route("/get-quotation/:quotationId").get(VerifyUser, getQuotationById);
+router
+  .route("/update-quotation/:quotationId/:userId")
+  .post(VerifyUser, updateQuotation);
 
 //secured routes
 router.route("/logout").post(VerifyUser, LogOutUser);
