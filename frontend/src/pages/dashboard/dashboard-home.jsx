@@ -17,15 +17,18 @@ import LoadingUI from "../../components/LoadingUI";
 import { fetchInvoices } from "../../utils/slice/InvoiceSlice";
 import { fetchEstimates } from "../../utils/slice/EstimateSlice";
 import EstimateForm from "../estimates/estimate-form";
+import QuotationForm from "../quotations/quotation-form";
+import RecentInvoice from "./recent-invoice";
+import RecentEstimate from "./recent-estimate";
 
 const DashboardHome = ({ startLoading, stopLoading }) => {
   const dispatch = useDispatch();
   const [isActive, setIsActive] = useState(false);
   const [isActive2, setIsActive2] = useState(false);
+  const [isActive3, setIsActive3] = useState(false);
   const user = useSelector((store) => store.UserInfo.user[0]);
   const { invoices, loading, error } = useSelector((state) => state.Invoices);
   const { estimates } = useSelector((state) => state.Estimates);
-  console.log(estimates);
   useEffect(() => {
     stopLoading();
     if (user?._id) {
@@ -33,16 +36,8 @@ const DashboardHome = ({ startLoading, stopLoading }) => {
       dispatch(fetchEstimates(user._id));
     } else {
       startLoading();
-    }
+  }
   }, [user, dispatch]);
-  const TableHeaders = [
-    "Client",
-    "Contact Number",
-    "Amount",
-    "Invoice No #",
-    "Invoice Date",
-    "Payment Status",
-  ];
   const totalBillingAmount = invoices.reduce(
     (acc, invoice) => acc + (invoice.billingAmount || 0),
     0
@@ -58,13 +53,13 @@ const DashboardHome = ({ startLoading, stopLoading }) => {
       <div className={`text-2xl ${color}`}>{icon}</div>
       <div>
         <p className="text-gray-500 text-sm">{label}</p>
-        <p className="text-lg font-semibold">{value}</p>
+        <div className="text-lg font-semibold">{value}</div>
       </div>
     </div>
   );
 
   return (
-    <div className="bg-white px-6 py-10 md:px-12 text-gray-800">
+    <div className="bg-white px-6 py-10 md:px-12 text-gray-800 h-full overflow-scroll">
       {/* Welcome */}
       <div className="mb-8">
         <h1 className="text-3xl font-semibold mb-1">Welcome back 👋</h1>
@@ -92,10 +87,10 @@ const DashboardHome = ({ startLoading, stopLoading }) => {
           icon={<FaWallet />}
           label="Revenue"
           value={
-            <h1 className="flex justify-center items-center">
+            <p className="flex justify-center items-center">
               <MdCurrencyRupee />
               {totalBillingAmount.toFixed(2)}
-            </h1>
+            </p>
           }
           color="text-[#7E63F4]"
         />
@@ -112,7 +107,7 @@ const DashboardHome = ({ startLoading, stopLoading }) => {
         />
       </div>
 
-      {/* Quick Actions */}
+      {/* Quick Actions buttons */}
       <div className="mb-12">
         <h2 className="text-xl font-semibold mb-4">Quick Actions</h2>
         <div className="flex flex-wrap gap-4">
@@ -132,88 +127,34 @@ const DashboardHome = ({ startLoading, stopLoading }) => {
             }
             onClick={() => setIsActive2(true)}
           />
+          <Button
+            Label={
+              <h1 className="flex justify-center items-center gap-2">
+                {<FaPlus />}New Quotation
+              </h1>
+            }
+            onClick={() => setIsActive3(true)}
+          />
         </div>
       </div>
 
-      {/* Recent Activity */}
-      <div>
-        <h2 className="text-xl font-semibold mb-4">Recent Invoices</h2>
-        <div className="overflow-x-auto bg-gray-50 rounded-lg shadow-sm">
-          <table className="w-full text-sm text-left bg-white rounded-xl shadow-sm overflow-hidden">
-            <thead className="bg-gray-100 text-gray-600">
-              <tr>
-                {TableHeaders.map((header, index) => (
-                  <th
-                    key={index}
-                    className="px-5 py-3 font-medium tracking-wide"
-                  >
-                    {header}
-                  </th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              {invoices.length > 0 ? (
-                invoices.slice(0, 2).map((invoice) => (
-                  <tr
-                    key={invoice._id}
-                    className="hover:bg-gray-50 transition-colors duration-200 border-b"
-                  >
-                    <td className="px-5 py-3 text-[#7E63F4] font-medium">
-                      <Link
-                        to={`/current-invoice/${invoice._id}`}
-                        className="hover:underline"
-                      >
-                        {invoice?.customerName}
-                      </Link>
-                    </td>
-                    <td className="px-5 py-3 text-gray-700">
-                      {invoice?.customerPhone}
-                    </td>
-                    <td className="px-5 py-3 text-gray-700">
-                      <span className="flex justify-start items-center font-semibold">
-                        <MdCurrencyRupee />
-                        {invoice?.billingAmount}
-                      </span>
-                    </td>
-                    <td className="px-5 py-3 text-gray-700">
-                      {invoice?.invoiceNumber}
-                    </td>
-                    <td className="px-5 py-3 text-gray-500">
-                      <p>{new Date(invoice?.createdAt).toLocaleDateString()}</p>
-                      <p className="text-xs">
-                        {new Date(invoice?.createdAt).toLocaleTimeString()}
-                      </p>
-                    </td>
-                    <td className="px-5 py-3 text-gray-500">
-                      <p>
-                        {invoice.dueAmount === 0 ? (
-                          <span className="bg-green-100 text-center w-fit p-1 font-bold text-green-700 text-xs select-none">
-                            Complete
-                          </span>
-                        ) : (
-                          <span className="bg-yellow-100 text-center w-fit p-1 font-bold text-yellow-700 text-xs select-none">
-                            Pending
-                          </span>
-                        )}
-                      </p>
-                    </td>
-                  </tr>
-                ))
-              ) : (
-                <tr>
-                  <td
-                    colSpan={TableHeaders.length}
-                    className="px-5 py-6 text-center text-gray-500"
-                  >
-                    No invoices found.
-                  </td>
-                </tr>
-              )}
-            </tbody>
-          </table>
-        </div>
-      </div>
+      {/* Recent Invoices */}
+      <RecentInvoice />
+      {/* Recent Estimates */}
+      <RecentEstimate />
+      <AnimatePresence>
+        {isActive && (
+          <motion.div
+            initial={{ opacity: 0, scale: 0.1 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.1 }}
+            transition={{ duration: 0.4, ease: "easeInOut" }}
+            className="fixed h-screen w-screen top-0 left-0 bg-white lg:p-20 p-5 z-20 overflow-auto no-scrollbar"
+          >
+            <Bill_form onCancel={() => setIsActive(false)} />
+          </motion.div>
+        )}
+      </AnimatePresence>
       <AnimatePresence>
         {isActive2 && (
           <motion.div
@@ -228,7 +169,7 @@ const DashboardHome = ({ startLoading, stopLoading }) => {
         )}
       </AnimatePresence>
       <AnimatePresence>
-        {isActive && (
+        {isActive3 && (
           <motion.div
             initial={{ opacity: 0, scale: 0.1 }}
             animate={{ opacity: 1, scale: 1 }}
@@ -236,7 +177,7 @@ const DashboardHome = ({ startLoading, stopLoading }) => {
             transition={{ duration: 0.4, ease: "easeInOut" }}
             className="fixed h-screen w-screen top-0 left-0 bg-white lg:p-20 p-5 z-20 overflow-auto no-scrollbar"
           >
-            <Bill_form onCancel={() => setIsActive(false)} />
+            <QuotationForm onCancel={() => setIsActive3(false)} />
           </motion.div>
         )}
       </AnimatePresence>

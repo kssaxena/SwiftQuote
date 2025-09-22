@@ -1,20 +1,23 @@
-import React, { useState } from "react";
-import Button from "../../components/Button";
+import React, { useEffect } from "react";
 import LoadingUI from "../../components/LoadingUI";
-import Bill_form from "./bill-form";
-import { AnimatePresence, motion } from "framer-motion";
 import { useDispatch, useSelector } from "react-redux";
-import { useEffect } from "react";
 import { fetchInvoices } from "../../utils/slice/InvoiceSlice";
 import { Link } from "react-router-dom";
-import InputBox from "../../components/Input";
 import { MdCurrencyRupee } from "react-icons/md";
 
-const Bills = ({ startLoading, stopLoading }) => {
+const RecentInvoice = ({ startLoading, stopLoading }) => {
   const dispatch = useDispatch();
   const user = useSelector((store) => store.UserInfo.user[0]);
   const { invoices, loading, error } = useSelector((state) => state.Invoices);
-  const [isActive, setIsActive] = useState(false);
+  useEffect(() => {
+    stopLoading();
+    if (user?._id) {
+      dispatch(fetchInvoices(user._id));
+      //   dispatch(fetchEstimates(user._id));
+    } else {
+      startLoading();
+    }
+  }, [user, dispatch]);
   const TableHeaders = [
     "Client",
     "Contact Number",
@@ -23,48 +26,10 @@ const Bills = ({ startLoading, stopLoading }) => {
     "Creation Date",
     "Payment Status",
   ];
-
-  const [searchQuery, setSearchQuery] = useState("");
-
-  // Filter invoices only by customerName, customerPhone, and invoiceNumber
-  const filteredInvoices = invoices.filter((invoice) => {
-    const query = searchQuery.toLowerCase();
-    return (
-      invoice?.customerName?.toLowerCase().includes(query) ||
-      invoice?.customerPhone?.toLowerCase().includes(query) ||
-      invoice?.invoiceNumber?.toLowerCase().includes(query)
-    );
-  });
-  // console.log(filteredInvoices);
-
-  useEffect(() => {
-    // startLoading();
-    if (user?._id) {
-      dispatch(fetchInvoices(user._id));
-    }
-    // stopLoading();
-  }, [user, dispatch]);
-
   return (
-    <div className="flex justify-start items-center flex-col p-5 h-full overflow-scroll relative no-scrollbar">
-      <div className="sticky top-1 w-full bg-neutral-100">
-        <div className="flex justify-between items-center w-full gap-4 ">
-          <h1 className="text-2xl font-bold text-center">Invoices </h1>
-          <Button Label="+ Generate" onClick={() => setIsActive(true)} />
-        </div>
-        <div className=" flex justify-end w-full ">
-          <InputBox
-            LabelName={<h1>Search among {invoices.length} invoices</h1>}
-            Value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            Type="text"
-            Placeholder={"Search Invoices"}
-          />
-        </div>
-      </div>
-
-      {/* table  */}
-      <div className="w-full h-full mt-1">
+    <div className="mb-4">
+      <h2 className="text-xl font-semibold mb-4">Recent Invoices</h2>
+      <div className="overflow-x-auto bg-gray-50 rounded-lg shadow-sm">
         <table className="w-full text-sm text-left bg-white rounded-xl shadow-sm overflow-hidden">
           <thead className="bg-gray-100 text-gray-600">
             <tr>
@@ -76,8 +41,8 @@ const Bills = ({ startLoading, stopLoading }) => {
             </tr>
           </thead>
           <tbody>
-            {filteredInvoices.length > 0 ? (
-              filteredInvoices.map((invoice) => (
+            {invoices.length > 0 ? (
+              invoices.slice(0, 2).map((invoice) => (
                 <tr
                   key={invoice._id}
                   className="hover:bg-gray-50 transition-colors duration-200 border-b"
@@ -136,22 +101,8 @@ const Bills = ({ startLoading, stopLoading }) => {
           </tbody>
         </table>
       </div>
-
-      <AnimatePresence>
-        {isActive && (
-          <motion.div
-            initial={{ opacity: 0, scale: 0.1 }}
-            animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0, scale: 0.1 }}
-            transition={{ duration: 0.4, ease: "easeInOut" }}
-            className="fixed h-screen w-screen top-0 left-0 bg-white lg:p-20 p-5 z-20 overflow-auto no-scrollbar"
-          >
-            <Bill_form onCancel={() => setIsActive(false)} />
-          </motion.div>
-        )}
-      </AnimatePresence>
     </div>
   );
 };
 
-export default LoadingUI(Bills);
+export default LoadingUI(RecentInvoice);

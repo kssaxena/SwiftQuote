@@ -292,6 +292,7 @@ const CurrentInvoice = ({ startLoading, stopLoading }) => {
                 <tr>
                   <th className="border p-1">Sl No.</th>
                   <th className="border p-1">Description</th>
+                  <th className="border p-1">Color</th>
                   <th className="border p-1">Qty</th>
                   <th className="border p-1">Size</th>
                   <th className="border p-1">Rate</th>
@@ -303,6 +304,9 @@ const CurrentInvoice = ({ startLoading, stopLoading }) => {
                   <tr key={index}>
                     <td className="border p-1 text-center">{index + 1}</td>
                     <td className="border p-1">{item.description}</td>
+                    <td className="border p-1 text-center">
+                      {item.color || "No color specified"}
+                    </td>
                     <td className="border p-1 text-center">{item.qty}</td>
                     <td className="border p-1 text-center">{item.size}</td>
                     <td className="border p-1 text-center">{item.rate}</td>
@@ -386,7 +390,7 @@ const CurrentInvoice = ({ startLoading, stopLoading }) => {
             </div>
           </section>
 
-          <footer className="print-footer border-t">
+          <footer className="print-footer ">
             <div className="mt-2 text-[8px] flex justify-center items-center ">
               This is a{" "}
               <span>

@@ -12,18 +12,14 @@ const quotationSchema = new mongoose.Schema(
     customerName: { type: String, required: true },
     customerAddress: { type: String, required: true },
     customerPhone: { type: String, required: true },
-    customerEmail: { type: String },
     customerGST: { type: String },
     customerState: { type: String, required: true },
 
     // Quotation Details
     quotationNumber: { type: String, required: true },
-    quotationDate: { type: Date, required: true },
-    validUntil: { type: Date, required: true },
-    referenceNo: { type: String },
-    buyerOrderNo: { type: String },
-    deliveryNote: { type: String },
-    paymentTerms: { type: String, required: true },
+    quotationFromDate: { type: Date, required: true },
+    quotationUptoDate: { type: Date, required: true },
+    subject: { type: String },
 
     // Goods/Items
     items: [
@@ -37,20 +33,20 @@ const quotationSchema = new mongoose.Schema(
       },
     ],
 
-    // Tax & Summary
-    subTotal: { type: Number, required: true },
-    taxableValue: { type: Number, required: true },
-    sgst: { type: Number, default: 0 },
-    cgst: { type: Number, default: 0 },
-    igst: { type: Number, default: 0 },
-    totalTax: { type: Number, required: true },
-    grandTotal: { type: Number, required: true },
+    // // Tax & Summary
+    // subTotal: { type: Number, required: true },
+    // taxableValue: { type: Number, required: true },
+    // sgst: { type: Number, default: 0 },
+    // cgst: { type: Number, default: 0 },
+    // igst: { type: Number, default: 0 },
+    // totalTax: { type: Number, required: true },
+    // grandTotal: { type: Number, required: true },
 
     // Status
     status: {
       type: String,
-      enum: ["draft", "sent", "accepted", "rejected"],
-      default: "draft",
+      enum: ["Draft", "Downloaded & Sent", "Accepted", "Rejected"],
+      default: "Draft",
     },
   },
   { timestamps: true }

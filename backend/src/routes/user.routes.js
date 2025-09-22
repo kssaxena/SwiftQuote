@@ -65,8 +65,8 @@ router.route("/get-estimates/:userId").get(VerifyUser, getEstimatesByUserId);
 router.route("/get-estimate/:estimateId").get(VerifyUser, getEstimateById);
 
 // routes for quotations
-router.route("/create-quotation/:userId").post(VerifyUser, createQuotation);
-router.route("/get-quotations/:userId").get(VerifyUser, getQuotationsByUserId);
+router.route("/generate-quotation/:userId").post(VerifyUser, createQuotation);
+router.route("/get-all-quotations/:userId").get(VerifyUser, getQuotationsByUserId);
 router.route("/get-quotation/:quotationId").get(VerifyUser, getQuotationById);
 router
   .route("/update-quotation/:quotationId/:userId")

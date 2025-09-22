@@ -9,6 +9,7 @@ import Estimates from "../estimates/estimates";
 import { Link, useNavigate } from "react-router-dom";
 import { LuLogOut } from "react-icons/lu";
 import { clearUser } from "../../utils/slice/UserInfoSlice";
+import Quotations from "../quotations/quotations";
 
 const Home = ({ startLoading, stopLoading }) => {
   const user = useSelector((store) => store.UserInfo.user);
@@ -25,7 +26,7 @@ const Home = ({ startLoading, stopLoading }) => {
     // stopLoading()
   }, [activeSection]);
 
-  const sections = ["Dashboard", "Bills", "Estimate Invoice"];
+  const sections = ["Dashboard", "Bills", "Estimate Invoice", "Quotations"];
   return user.length ? (
     <div className="flex flex-col lg:flex-row justify-start items-start w-full">
       {/* Hamburger button (only visible on small screens) */}
@@ -100,6 +101,7 @@ const Home = ({ startLoading, stopLoading }) => {
         {activeSection === "Dashboard" && <DashboardHome />}
         {activeSection === "Bills" && <Bills />}
         {activeSection === "Estimate Invoice" && <Estimates />}
+        {activeSection === "Quotations" && <Quotations />}
       </main>
     </div>
   ) : (

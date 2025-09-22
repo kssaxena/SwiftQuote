@@ -48,13 +48,11 @@ export const updateInvoice = createAsyncThunk(
   "invoices/updateInvoice",
   async ({ invoiceId, formData, userId }, { rejectWithValue }) => {
     try {
-      console.log(invoiceId);
       const response = await FetchData(
         `users/update-invoice/${invoiceId}/${userId}`,
         "post",
         formData
       );
-      console.log(response);
       return response.data.data;
     } catch (err) {
       return rejectWithValue(err.response?.data || "Failed to update invoice");
@@ -147,7 +145,6 @@ const InvoiceSlice = createSlice({
         state.invoices = state.invoices.map((inv) =>
           inv._id === updatedInvoice._id ? updatedInvoice : inv
         );
-        // console.log(state.currentInvoice?._id);
         if (state.currentInvoice?._id === updatedInvoice._id) {
           state.currentInvoice = updatedInvoice;
         }

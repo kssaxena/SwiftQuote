@@ -63,53 +63,6 @@ const Bill_form = ({ onCancel, startLoading, stopLoading }) => {
   // Total of all goods
   const totalGoodsAmount = items.reduce((sum, item) => sum + item.amount, 0);
 
-  // inside Bill_form component
-  // const handleGenerateInvoice = async (e) => {
-  //   e.preventDefault();
-
-  //   try {
-  //     // setError("");
-  //     // setSuccess("");
-
-  //     const formData = new FormData(formRef.current);
-
-  //     // Add dynamic items array separately so backend can parse them easily
-  //     formData.append("items", JSON.stringify(items));
-
-  //     // Debugging – see what’s going to backend
-  //     for (var pair of formData.entries()) {
-  //       console.log(pair[0] + ", " + pair[1]);
-  //     }
-
-  //     startLoading();
-  //     const response = await FetchData(
-  //       // "invoices/create-invoice",
-  //       `users/generate-invoice/${user[0]?._id}`,
-  //       "post",
-  //       formData
-  //       // true // since we’re using FormData
-  //     );
-
-  //     console.log(response);
-  //     // setSuccess("Invoice generated successfully!");
-  //     alert("Invoice generated successfully!");
-  //     // optional: reset form + items
-  //     formRef.current.reset();
-  //     setItems([{ description: "", size: "", qty: 1, rate: 0, amount: 0 }]);
-  //     setBillingAmount("");
-  //     setReceived("");
-  //     onCancel();
-  //   } catch (err) {
-  //     console.error(err);
-  //     alert(
-  //       err.response?.data?.message ||
-  //         "An error occurred while generating the invoice."
-  //     );
-  //   } finally {
-  //     stopLoading();
-  //   }
-  // };
-
   const handleGenerateInvoice = async (e) => {
     e.preventDefault();
 
