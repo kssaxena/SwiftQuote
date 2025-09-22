@@ -101,7 +101,6 @@ const QuotationForm = ({ onCancel, startLoading, stopLoading }) => {
       setReceived("");
       onCancel();
     } catch (err) {
-      console.log(err);
       alert(
         err?.payload?.message ||
           "An error occurred while generating the quotation."

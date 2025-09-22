@@ -28,9 +28,10 @@ import {
   createQuotation,
   getQuotationsByUserId,
   getQuotationById,
-  updateQuotation,
-  deleteQuotation,
+  updateQuotationById,
+  quotationStatus,
 } from "../controllers/quotation.controllers.js";
+import { verify } from "crypto";
 
 const router = Router();
 
@@ -66,11 +67,16 @@ router.route("/get-estimate/:estimateId").get(VerifyUser, getEstimateById);
 
 // routes for quotations
 router.route("/generate-quotation/:userId").post(VerifyUser, createQuotation);
-router.route("/get-all-quotations/:userId").get(VerifyUser, getQuotationsByUserId);
+router
+  .route("/get-all-quotations/:userId")
+  .get(VerifyUser, getQuotationsByUserId);
 router.route("/get-quotation/:quotationId").get(VerifyUser, getQuotationById);
 router
   .route("/update-quotation/:quotationId/:userId")
-  .post(VerifyUser, updateQuotation);
+  .post(VerifyUser, updateQuotationById);
+router
+  .route("/update-quotation-status/:quotationId")
+  .post(VerifyUser, quotationStatus);
 
 //secured routes
 router.route("/logout").post(VerifyUser, LogOutUser);

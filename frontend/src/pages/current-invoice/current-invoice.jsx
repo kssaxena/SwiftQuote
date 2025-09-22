@@ -96,6 +96,8 @@ const CurrentInvoice = ({ startLoading, stopLoading }) => {
     /[\/:]/g,
     "-"
   );
+
+  
   const reactToPrintFn = useReactToPrint({
     contentRef,
     documentTitle: `Invoice-${safeInvoiceNumber}`,

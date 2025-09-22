@@ -108,27 +108,62 @@ const getQuotationById = asyncHandler(async (req, res) => {
 });
 
 // ✅ Update quotation
-const updateQuotation = asyncHandler(async (req, res) => {
-  let items = [];
-  if (req.body.items) {
+const updateQuotationById = asyncHandler(async (req, res) => {
+  const { quotationId } = req.params;
+
+  // Copy body data
+  let updatedData = { ...req.body };
+
+  // Parse items if provided
+  if (updatedData.items) {
     try {
-      items = JSON.parse(req.body.items || "[]");
-    } catch {
-      throw new ApiError(400, "Invalid items format");
+      updatedData.items = JSON.parse(updatedData.items);
+    } catch (err) {
+      throw new ApiError(400, "Invalid items format. Must be JSON.");
     }
   }
 
-  const updatedQuotation = await Quotation.findByIdAndUpdate(
-    req.params.id,
-    { ...req.body, ...(items.length && { items }) },
-    { new: true }
-  );
+  // ✅ Debug log
+  console.log("Updating quotation:", quotationId, updatedData);
 
-  if (!updatedQuotation) throw new ApiError(404, "Quotation not found");
+  const quotation = await Quotation.findById(quotationId);
+  if (!quotation) {
+    throw new ApiError(404, "Quotation not found");
+  }
 
-  res.json(
-    new ApiResponse(200, updatedQuotation, "Quotation updated successfully")
-  );
+  // Merge updated fields into existing quotation
+  Object.keys(updatedData).forEach((key) => {
+    quotation[key] = updatedData[key];
+  });
+
+  await quotation.save();
+
+  res
+    .status(200)
+    .json(new ApiResponse(200, quotation, "Quotation updated successfully"));
+});
+
+const quotationStatus = asyncHandler(async (req, res) => {
+  const { quotationId } = req.params;
+
+  // Find product
+  const quotation = await Quotation.findById(quotationId);
+  if (!quotation) {
+    return res.status(404).json({
+      success: false,
+      message: "Quotation not found",
+    });
+  }
+
+  // Update status
+  quotation.status = "Downloaded & Sent";
+  await quotation.save();
+
+  res.status(200).json({
+    success: true,
+    message: "quotation marked as active successfully",
+    quotation,
+  });
 });
 
 // ✅ Delete quotation
@@ -145,6 +180,7 @@ export {
   createQuotation,
   getQuotationsByUserId,
   getQuotationById,
-  updateQuotation,
+  updateQuotationById,
   deleteQuotation,
+  quotationStatus,
 };

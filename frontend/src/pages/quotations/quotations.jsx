@@ -12,7 +12,6 @@ const Quotations = ({ startLoading, stopLoading }) => {
   const dispatch = useDispatch();
   const user = useSelector((store) => store.UserInfo.user[0]);
   const Quotations = useSelector((state) => state.Quotation.quotations);
-  console.log(Quotations);
   const [isActive, setIsActive] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
 
