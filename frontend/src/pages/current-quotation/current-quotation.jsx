@@ -178,7 +178,7 @@ const CurrentQuotation = ({ startLoading, stopLoading }) => {
         {/* ---- Quotation Content (Display Mode) ---- */}
         <div
           ref={contentRef} // 👈 printable content
-          className="flex flex-col gap-6 p-4 mt-10 bg-white shadow-lg rounded-lg w-[95%] mx-auto text-xs border"
+          className="flex flex-col p-4 mt-10 bg-white shadow-lg rounded-lg w-[95%] mx-auto text-xs border"
         >
           <h1 className="text-2xl font-bold text-center">Quotation</h1>
           <h2 className="font-semibold">{user.businessName}</h2>
@@ -211,9 +211,6 @@ const CurrentQuotation = ({ startLoading, stopLoading }) => {
               <p>
                 <strong>Valid Upto:</strong>{" "}
                 {new Date(quotation.quotationUptoDate).toLocaleDateString()}
-              </p>
-              <p>
-                <strong>Status:</strong> {quotation.status}
               </p>
             </div>
           </div>
