@@ -178,47 +178,81 @@ const CurrentQuotation = ({ startLoading, stopLoading }) => {
         {/* ---- Quotation Content (Display Mode) ---- */}
         <div
           ref={contentRef} // 👈 printable content
-          className="flex flex-col p-4 mt-10 bg-white shadow-lg rounded-lg w-[95%] mx-auto text-xs border"
+          className="flex flex-col p-4 mt-10 w-[95%] mx-auto text-xs"
         >
           <h1 className="text-2xl font-bold text-center">Quotation</h1>
+          <p className="text-center">
+            <strong>Quotation No:</strong> {quotation.quotationNumber}
+          </p>
+          <img
+            src={user?.image[0]?.url}
+            alt={user?.businessName}
+            className="w-14 h-14 rounded-full shadow-lg "
+          />
+          <strong>from</strong>
           <h2 className="font-semibold">{user.businessName}</h2>
           <p>
-            {user.businessAddress}, {user.businessState}
+            {user.businessAddress} | <strong>State</strong>:{" "}
+            {user.businessState}
           </p>
-          <p>GSTIN: {user.gstNumber}</p>
           <p>
-            Phone: {user.businessContact} | Email: {user.businessEmail}
+            <strong>GSTIN</strong>: {user.gstNumber}
           </p>
-
-          <div className="grid grid-cols-2 gap-6 mt-4">
+          <p>
+            <strong>Phone</strong>: {user.businessContact} |{" "}
+            <strong>Email</strong>: {user.businessEmail}
+          </p>
+          <div className="py-6">
+            <p>
+              <strong>Valid from (MMDDYY):</strong>{" "}
+              {new Date(quotation.createdAt).toLocaleDateString()}
+            </p>
+            <p>
+              <strong>Valid Upto (MMDDYY):</strong>{" "}
+              {new Date(quotation.quotationUptoDate).toLocaleDateString()}
+            </p>
+          </div>
+          <div className="grid grid-cols-2 gap-6">
             <div>
               <p>
                 <strong>To:</strong> {quotation.customerName}
               </p>
-              <p>{quotation.customerAddress}</p>
-              <p>Phone: {quotation.customerPhone}</p>
-              <p>GST: {quotation.customerGST}</p>
-              <p>State: {quotation.customerState}</p>
+              <p>
+                <strong>Address</strong>: {""}
+                {quotation.customerAddress}
+              </p>
+              <p>
+                <strong>Phone</strong>: {quotation.customerPhone}
+              </p>
+              <p>
+                <strong>GST</strong>: {quotation.customerGST || "N/a"}
+              </p>
+              <p>
+                <strong>State</strong>: {quotation.customerState}
+              </p>
             </div>
-            <div className="text-right">
+            {/* <div className="text-right">
               <p>
                 <strong>Quotation No:</strong> {quotation.quotationNumber}
               </p>
               <p>
-                <strong>Date:</strong>{" "}
+                <strong>Valid from (MMDDYY):</strong>{" "}
                 {new Date(quotation.createdAt).toLocaleDateString()}
               </p>
               <p>
-                <strong>Valid Upto:</strong>{" "}
+                <strong>Valid Upto (MMDDYY):</strong>{" "}
                 {new Date(quotation.quotationUptoDate).toLocaleDateString()}
               </p>
-            </div>
+            </div> */}
           </div>
-
-          <h3 className="text-lg font-semibold underline">
-            Subject: {quotation.subject}
+          <h3 className="text-lg py-5">
+            <strong>Subject</strong>: {quotation.subject}
           </h3>
-
+          <h1>Dear Sir/Ma'am,</h1>
+          <p className="indent-8">
+            {user?.quotationPara ||
+              "We express our intent to supply for your requirements. Our products are manufactured in state-of-the-art facilities using advanced technology and premium quality materials. The offering includes a wide range of models and specifications suitable for residential, commercial, and industrial purposes, along with standard accessories, delivery, and installation support."}
+          </p>
           <table className="w-full border-collapse border text-xs mt-4">
             <thead className="bg-gray-100">
               <tr>
@@ -245,7 +279,15 @@ const CurrentQuotation = ({ startLoading, stopLoading }) => {
               ))}
             </tbody>
           </table>
-
+          <div>
+            <h1>
+              {quotation.items.map((item, index) => (
+                <p key={index}>
+                  <strong>Total Payable</strong>:{item.amount}
+                </p>
+              ))}
+            </h1>
+          </div>
           {/* Terms & Conditions */}
           <div className="mt-4">
             <h3 className="font-bold">Terms & Conditions</h3>
@@ -255,11 +297,40 @@ const CurrentQuotation = ({ startLoading, stopLoading }) => {
               ))}
             </ul>
           </div>
-
-          {/* Footer */}
-          <div className="mt-10 text-right">
-            <p>for {user.businessName}</p>
-            <p className="mt-6">Authorised Signatory</p>
+          <div className="flex flex-col gap-2 py-4">
+            <h1>
+              Thank you for considering <strong>{user?.businessName}</strong>.
+              Please feel free to reach out for further details or to confirm
+              your order.
+            </h1>
+            <p>Best regards</p>
+            <p>
+              {user?.businessName} | {user?.businessContact}
+            </p>
+          </div>
+          <div className=" w-fit px-5 py-2 rounded-lg shadow-lg">
+            <h1>Banking Details</h1>
+            <p>
+              <strong>Bank Name</strong>:{user?.bankDetails?.bankName || "N/A"}
+            </p>
+            <p>
+              <strong>Branch Name</strong>:
+              {user?.bankDetails?.branchName || "N/A"}
+            </p>
+            <p>
+              <strong>Account Name</strong>:
+              {user?.bankDetails?.accountHolderName || "N/A"}
+            </p>
+            <p>
+              <strong>Account Number</strong>:
+              {user?.bankDetails?.accountNumber || "N/A"}
+            </p>
+            <p>
+              <strong>IFSC Code</strong>:{user?.bankDetails?.ifscCode || "N/A"}
+            </p>
+            <p>
+              <strong>UPI Code</strong>:{user?.bankDetails?.upiId || "N/A"}
+            </p>
           </div>
           <footer className="print-footer ">
             <div className="mt-2 text-[8px] flex justify-center items-center ">
