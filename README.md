@@ -27,8 +27,8 @@ To begin automating your workflow with Swift Quote, please follow these steps:
 
 | Area | Technologies |
 | :--- | :--- |
-| **Frontend** | *\ React, Vite, Redux, HTML5, CSS3, JavaScript, TailwindCSS* |
-| **Backend** | *\ Node.js, JavaScript* |
-| **Database** | *\ MongoDB, noSQL* |
+| **Frontend** | * React, Vite, Redux, HTML5, CSS3, JavaScript, TailwindCSS* |
+| **Backend** | * Node.js, JavaScript* |
+| **Database** | * MongoDB, noSQL* |
 
 ---
