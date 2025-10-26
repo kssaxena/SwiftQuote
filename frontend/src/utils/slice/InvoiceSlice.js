@@ -37,8 +37,16 @@ export const createInvoice = createAsyncThunk(
         "post",
         formData
       );
+      console.log(response);
+      alert(
+        response.data.data.message ||
+          response.data.message ||
+          "Invoice created successfully !"
+      );
       return response.data.data.invoice;
     } catch (err) {
+      // console.log(err);
+      alert("Failed to create Invoice");
       return rejectWithValue(err.response?.data || "Failed to create invoice");
     }
   }
