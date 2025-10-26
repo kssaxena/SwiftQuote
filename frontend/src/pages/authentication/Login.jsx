@@ -6,10 +6,13 @@ import { FetchData } from "../../utils/FetchFromApi";
 import { parseErrorMessage } from "../../utils/ErrorMessageParser";
 import { addUser, clearUser } from "../../utils/slice/UserInfoSlice";
 import { useDispatch } from "react-redux";
+import { IoEye } from "react-icons/io5";
+import { IoMdEyeOff } from "react-icons/io";
 
 const Login = ({ startLoading, stopLoading }) => {
   const navigate = useNavigate();
   const [error, setError] = useState("");
+  const [showPassword, setShowPassword] = useState("password");
   const handleHome = () => {
     navigate("/");
     window.location.reload();
@@ -89,15 +92,36 @@ const Login = ({ startLoading, stopLoading }) => {
                 required
               />
             </div>
-            <div className="flex-1">
+            <div className="flex-1 relative">
               <label className="block mb-1 text-sm font-medium">Password</label>
               <input
-                type="password"
+                type={`${showPassword}`}
                 name="password"
                 className="w-full border border-gray-300 rounded-lg p-2 focus:outline-none focus:ring focus:ring-blue-200"
                 onChange={handleChange}
                 required
               />
+              <div className="absolute top-9 right-5">
+                {showPassword === "password" ? (
+                  <button
+                    onClick={(e) => {
+                      e.preventDefault();
+                      setShowPassword("text");
+                    }}
+                  >
+                    <IoMdEyeOff />
+                  </button>
+                ) : (
+                  <button
+                    onClick={(e) => {
+                      e.preventDefault();
+                      setShowPassword("password");
+                    }}
+                  >
+                    <IoEye />
+                  </button>
+                )}
+              </div>
             </div>
           </div>
         </div>
