@@ -14,7 +14,29 @@ const Bill_form = ({ onCancel, startLoading, stopLoading }) => {
   const [items, setItems] = useState([
     { description: "", size: "", color: "", qty: 1, rate: 0, amount: 0 },
   ]);
-  // console.log(items);
+
+  const [discount, setDiscount] = useState(0);
+  const [error, setError] = useState("");
+
+  const handleDiscountChange = (e) => {
+    const value = e.target.value;
+    const num = parseFloat(value);
+
+    setDiscount(value);
+
+    // Default value (0) is fine — means no discount
+    if (value === "" || num === 0) {
+      setError("");
+      return;
+    }
+
+    // If filled, must be between 1 and 100 (inclusive, decimals allowed)
+    if (isNaN(num) || num < 1 || num > 100) {
+      setError("Discount must be between 1 and 100.");
+    } else {
+      setError("");
+    }
+  };
 
   // Tax & Summary
   const [billingAmount, setBillingAmount] = useState("");
@@ -81,7 +103,7 @@ const Bill_form = ({ onCancel, startLoading, stopLoading }) => {
 
       await dispatch(createInvoice({ userId: user[0]?._id, formData }));
 
-      alert("Invoice generated successfully!");
+      // alert("Invoice generated successfully!");
 
       // Reset form + states
       formRef.current.reset();
@@ -90,7 +112,8 @@ const Bill_form = ({ onCancel, startLoading, stopLoading }) => {
       setReceived("");
       onCancel();
     } catch (err) {
-      console.error(err);
+      console.log(err);
+      console.log(createInvoice.err);
       alert(
         err?.payload?.message ||
           "An error occurred while generating the invoice."
@@ -395,9 +418,19 @@ const Bill_form = ({ onCancel, startLoading, stopLoading }) => {
 
             {/* <div className="font-semibold">
               : <b>{dueAmount.toFixed(2)}</b>
-            </div> */}
+              </div> */}
           </div>
         </div>
+        {error && <p style={{ color: "red" }}>{error}</p>}
+        <InputBox
+          LabelName="Discount (if any) %"
+          Placeholder="Discount"
+          Name="discount"
+          Type="number"
+          Required={false}
+          value={discount}
+          onChange={handleDiscountChange}
+        />
 
         <div className="flex justify-center items-center lg:gap-10 gap-2 lg:flex-row flex-col">
           <Button
