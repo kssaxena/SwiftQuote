@@ -10,12 +10,15 @@ import Login from "./Login";
 import BillingHighlights from "../../components/website-highlights";
 import FAQSection from "../../components/faqs";
 import { AnimatePresence, motion } from "framer-motion";
+import { IoEye } from "react-icons/io5";
+import { IoMdEyeOff } from "react-icons/io";
 
 const ReLoginError = ({ startLoading, stopLoading }) => {
   const navigate = useNavigate();
   const [error, setError] = useState("");
   const [isOpen, setIsOpen] = useState(false);
   const [isOpen2, setIsOpen2] = useState(false);
+  const [showPassword, setShowPassword] = useState("password");
   const handleHome = () => {
     navigate("/");
   };
@@ -183,15 +186,36 @@ const ReLoginError = ({ startLoading, stopLoading }) => {
                 required
               />
             </div>
-            <div className="flex-1">
+            <div className="flex-1 relative">
               <label className="block mb-1 text-sm font-medium">Password</label>
               <input
-                type="password"
+                type={`${showPassword}`}
                 name="password"
                 className="w-full border border-gray-300 rounded-lg p-2 focus:outline-none focus:ring focus:ring-blue-200"
                 onChange={handleChange}
                 required
               />
+              <div className="absolute top-9 right-5">
+                {showPassword === "password" ? (
+                  <button
+                    onClick={(e) => {
+                      e.preventDefault();
+                      setShowPassword("text");
+                    }}
+                  >
+                    <IoMdEyeOff />
+                  </button>
+                ) : (
+                  <button
+                    onClick={(e) => {
+                      e.preventDefault();
+                      setShowPassword("password");
+                    }}
+                  >
+                    <IoEye />
+                  </button>
+                )}
+              </div>
             </div>
           </div>
         </div>
@@ -406,17 +430,38 @@ const ReLoginError = ({ startLoading, stopLoading }) => {
                       required
                     />
                   </div>
-                  <div className="flex-1">
+                  <div className="flex-1 relative">
                     <label className="block mb-1 text-sm font-medium">
                       Password
                     </label>
                     <input
-                      type="password"
+                      type={`${showPassword}`}
                       name="password"
                       className="w-full border border-gray-300 rounded-lg p-2 focus:outline-none focus:ring focus:ring-blue-200"
                       onChange={handleChange}
                       required
                     />
+                    <div className="absolute top-9 right-5">
+                      {showPassword === "password" ? (
+                        <button
+                          onClick={(e) => {
+                            e.preventDefault();
+                            setShowPassword("text");
+                          }}
+                        >
+                          <IoMdEyeOff />
+                        </button>
+                      ) : (
+                        <button
+                          onClick={(e) => {
+                            e.preventDefault();
+                            setShowPassword("password");
+                          }}
+                        >
+                          <IoEye />
+                        </button>
+                      )}
+                    </div>
                   </div>
                 </div>
               </div>
