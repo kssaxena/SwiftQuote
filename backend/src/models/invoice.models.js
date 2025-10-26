@@ -40,6 +40,7 @@ const invoiceSchema = new mongoose.Schema(
 
     // Tax & Summary
     billingAmount: { type: Number, required: true }, // total incl. tax
+    disBillAmount: { type: Number },
     discount: { type: Number },
     taxableValue: { type: Number, required: true },
     sgstValue: { type: Number, required: true },
