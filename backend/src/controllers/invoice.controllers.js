@@ -30,6 +30,7 @@ const createInvoice = asyncHandler(async (req, res) => {
     sgstValue,
     cgstValue,
     totalTax,
+    discount,
     receivedAmount,
     dueAmount,
   } = req.body;
@@ -89,6 +90,9 @@ const createInvoice = asyncHandler(async (req, res) => {
   if (!items.length) {
     throw new ApiError(400, "At least one item is required");
   }
+  const discountedGrandTotal =
+    billingAmount - (billingAmount * discount || 0) / 100;
+  const discountedDueAmount = dueAmount - discountedGrandTotal;
 
   // Create new invoice
   const invoice = await Invoice.create({
@@ -109,12 +113,14 @@ const createInvoice = asyncHandler(async (req, res) => {
     deliveryTerms,
     items,
     billingAmount,
+    disBillAmount: discountedGrandTotal,
     taxableValue,
     sgstValue,
     cgstValue,
     totalTax,
+    discount,
     receivedAmount,
-    dueAmount,
+    dueAmount: discountedDueAmount,
   });
 
   res
