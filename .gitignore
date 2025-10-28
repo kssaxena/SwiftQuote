@@ -94,3 +94,4 @@ docker-compose.override.yml
 .idea/
 *.iml
 .DS_Store
+.VSCodeCounter

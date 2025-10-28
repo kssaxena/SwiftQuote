@@ -97,7 +97,6 @@ const CurrentInvoice = ({ startLoading, stopLoading }) => {
     "-"
   );
 
-  
   const reactToPrintFn = useReactToPrint({
     contentRef,
     documentTitle: `Invoice-${safeInvoiceNumber}`,
@@ -339,9 +338,28 @@ const CurrentInvoice = ({ startLoading, stopLoading }) => {
                 <span>Sub Total</span>{" "}
                 <span>{currentInvoice?.billingAmount}</span>
               </div>
+              <div className="flex justify-between font-semibold border-b">
+                {currentInvoice?.discount > 0 ? (
+                  <p className="flex justify-between font-semibold w-full">
+                    <span>Discount</span>{" "}
+                    <span>{currentInvoice?.discount}%</span>
+                  </p>
+                ) : (
+                  ""
+                )}
+              </div>
               <div className="flex justify-between font-bold border-b">
-                <span>Grand Total</span>{" "}
-                <span>{currentInvoice?.billingAmount}</span>
+                {currentInvoice?.discount > 0 ? (
+                  <p className="flex justify-between font-semibold w-full">
+                    <span>Discount</span>{" "}
+                    <span>{currentInvoice?.disBillAmount}</span>
+                  </p>
+                ) : (
+                  <p className="flex justify-between font-semibold w-full">
+                    <span>Grand Total</span>{" "}
+                    <span>{currentInvoice?.billingAmount}</span>
+                  </p>
+                )}
               </div>
               <div className="flex justify-between border-b">
                 <span>Advance Amount Received</span>{" "}
@@ -407,6 +425,9 @@ const CurrentInvoice = ({ startLoading, stopLoading }) => {
             </div>
           </footer>
         </div>
+
+        {/* editing the current invoice  */}
+
         {isEditOpen && (
           <div className="fixed inset-0 bg-black/50 flex justify-center items-start overflow-scroll no-scrollbar z-50">
             <div className="bg-white p-6 rounded-lg shadow-lg w-[95%] max-w-4xl">
