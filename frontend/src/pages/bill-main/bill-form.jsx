@@ -16,6 +16,7 @@ const Bill_form = ({ onCancel, startLoading, stopLoading }) => {
   ]);
 
   const [discount, setDiscount] = useState(0);
+  const [discountAmount, setDiscountAmount] = useState(0);
   const [error, setError] = useState("");
 
   const handleDiscountChange = (e) => {
@@ -23,6 +24,25 @@ const Bill_form = ({ onCancel, startLoading, stopLoading }) => {
     const num = parseFloat(value);
 
     setDiscount(value);
+
+    // Default value (0) is fine — means no discount
+    if (value === "" || num === 0) {
+      setError("");
+      return;
+    }
+
+    // If filled, must be between 1 and 100 (inclusive, decimals allowed)
+    if (isNaN(num) || num < 1 || num > 100) {
+      setError("Discount must be between 1 and 100.");
+    } else {
+      setError("");
+    }
+  };
+  const handleDiscountAmountChange = (e) => {
+    const value = e.target.value;
+    const num = parseFloat(value);
+
+    setDiscountAmount(value);
 
     // Default value (0) is fine — means no discount
     if (value === "" || num === 0) {
@@ -123,11 +143,10 @@ const Bill_form = ({ onCancel, startLoading, stopLoading }) => {
     }
   };
 
-  // const handleCancel = () => {
-  //   ();
-  //   console.log("before reload");
-  //   // window.location.reload();
-  // };
+  const handlePhoneChange = (e) => {
+    const value = e.target.value.replace(/\D/g, "").slice(0, 10);
+    setCustomerPhone(value);
+  };
 
   return (
     <div className="flex justify-center items-center ">
@@ -165,9 +184,23 @@ const Bill_form = ({ onCancel, startLoading, stopLoading }) => {
 
               <InputBox
                 LabelName="Phone Number *"
-                Type="number"
+                Type="text"
                 Placeholder="Enter Phone Number"
                 Name="customerPhone"
+                onKeyPress={(e) => {
+                  if (
+                    !/[0-9]/.test(e.key) &&
+                    e.key !== "Backspace" &&
+                    e.key !== "Delete" &&
+                    e.key !== "ArrowLeft" &&
+                    e.key !== "ArrowRight"
+                  ) {
+                    e.preventDefault();
+                  }
+                }}
+                maxLength={10}
+                pattern="\d{10}"
+                title="Please enter a valid 10-digit phone number"
               />
               <InputBox
                 LabelName="GST Number"
@@ -403,11 +436,22 @@ const Bill_form = ({ onCancel, startLoading, stopLoading }) => {
 
             <InputBox
               LabelName="Amount Received"
-              Type="number"
+              Type="text"
               Placeholder="Enter Amount Received"
               Name="receivedAmount"
               Value={received}
               onChange={(e) => setReceived(Number(e.target.value))}
+              onKeyPress={(e) => {
+                if (
+                  !/[0-9]/.test(e.key) &&
+                  e.key !== "Backspace" &&
+                  e.key !== "Delete" &&
+                  e.key !== "ArrowLeft" &&
+                  e.key !== "ArrowRight"
+                ) {
+                  e.preventDefault();
+                }
+              }}
             />
             <InputBox
               LabelName="Due Amount"
@@ -422,15 +466,49 @@ const Bill_form = ({ onCancel, startLoading, stopLoading }) => {
           </div>
         </div>
         {error && <p style={{ color: "red" }}>{error}</p>}
-        <InputBox
-          LabelName="Discount (if any) %"
-          Placeholder="Discount"
-          Name="discount"
-          Type="number"
-          Required={false}
-          value={discount}
-          onChange={handleDiscountChange}
-        />
+        <div className="flex justify-center items-center lg:flex-row flex-col gap-2">
+          <InputBox
+            LabelName="Discount (if any) %"
+            Placeholder="Discount in percentage"
+            Name="discount"
+            Type="text"
+            Required={false}
+            value={discount}
+            onChange={handleDiscountChange}
+            onKeyPress={(e) => {
+              if (
+                !/[0-9]/.test(e.key) &&
+                e.key !== "Backspace" &&
+                e.key !== "Delete" &&
+                e.key !== "ArrowLeft" &&
+                e.key !== "ArrowRight"
+              ) {
+                e.preventDefault();
+              }
+            }}
+          />
+          <p>or</p>
+          <InputBox
+            LabelName="Discount (if any in amount)"
+            Placeholder="Discount in amount"
+            Name="discountInAmount"
+            Type="text"
+            Required={false}
+            onKeyPress={(e) => {
+              if (
+                !/[0-9]/.test(e.key) &&
+                e.key !== "Backspace" &&
+                e.key !== "Delete" &&
+                e.key !== "ArrowLeft" &&
+                e.key !== "ArrowRight"
+              ) {
+                e.preventDefault();
+              }
+            }}
+            // value={discount}
+            // onChange={handleDiscountChange}
+          />
+        </div>
 
         <div className="flex justify-center items-center lg:gap-10 gap-2 lg:flex-row flex-col">
           <Button

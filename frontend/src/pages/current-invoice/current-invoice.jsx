@@ -23,7 +23,7 @@ const CurrentInvoice = ({ startLoading, stopLoading }) => {
   const { currentInvoice, loading, error } = useSelector(
     (state) => state.Invoices
   );
-
+  console.log(currentInvoice);
   const contentRef = useRef();
   const formRef = useRef();
 
@@ -196,7 +196,9 @@ const CurrentInvoice = ({ startLoading, stopLoading }) => {
 
   // ---------- Render ----------
   const currentProducts = currentInvoice?.items;
-  const words = numberToWords.toWords(currentInvoice?.billingAmount || 0);
+  const words = numberToWords.toWords(
+    currentInvoice?.disBillAmount || currentInvoice?.billingAmount || 0
+  );
 
   return (
     <div className="py-20 w-full ">
@@ -233,7 +235,7 @@ const CurrentInvoice = ({ startLoading, stopLoading }) => {
                 </p>
                 <p className="border-b">
                   <strong>Dated(MMDDYY):</strong>{" "}
-                  {new Date(currentInvoice?.createdAt).toLocaleDateString()}
+                  {new Date(currentInvoice?.invoiceDate).toLocaleDateString()}
                 </p>
                 <p className="border-b">
                   <strong>Reference No.:</strong> {currentInvoice?.referenceNo}
@@ -323,26 +325,28 @@ const CurrentInvoice = ({ startLoading, stopLoading }) => {
             <div className="w-1/2 border rounded-lg p-1 text-xs">
               <div className="flex justify-between border-b">
                 <span>Taxable Value</span>{" "}
-                <span>{currentInvoice?.taxableValue}</span>
+                <span>₹ {currentInvoice?.taxableValue}</span>
               </div>
               <div className="flex justify-between border-b">
-                <span>SGST (9%)</span> <span>{currentInvoice?.sgstValue}</span>
+                <span>SGST (9%)</span>{" "}
+                <span>₹ {currentInvoice?.sgstValue}</span>
               </div>
               <div className="flex justify-between border-b">
-                <span>CGST (9%)</span> <span>{currentInvoice?.cgstValue}</span>
+                <span>CGST (9%)</span>{" "}
+                <span>₹ {currentInvoice?.cgstValue}</span>
               </div>
               <div className="flex justify-between border-b">
-                <span>Total Tax</span> <span>{currentInvoice?.totalTax}</span>
+                <span>Total Tax</span> <span>₹ {currentInvoice?.totalTax}</span>
               </div>
               <div className="flex justify-between font-semibold border-b">
                 <span>Sub Total</span>{" "}
-                <span>{currentInvoice?.billingAmount}</span>
+                <span>₹ {currentInvoice?.billingAmount}</span>
               </div>
               <div className="flex justify-between font-semibold border-b">
                 {currentInvoice?.discount > 0 ? (
                   <p className="flex justify-between font-semibold w-full">
                     <span>Discount</span>{" "}
-                    <span>{currentInvoice?.discount}%</span>
+                    <span>₹ {currentInvoice?.discount}</span>
                   </p>
                 ) : (
                   ""
@@ -351,22 +355,23 @@ const CurrentInvoice = ({ startLoading, stopLoading }) => {
               <div className="flex justify-between font-bold border-b">
                 {currentInvoice?.discount > 0 ? (
                   <p className="flex justify-between font-semibold w-full">
-                    <span>Discount</span>{" "}
-                    <span>{currentInvoice?.disBillAmount}</span>
+                    <span>Grand Total</span>{" "}
+                    <span>₹ {currentInvoice?.disBillAmount}</span>
                   </p>
                 ) : (
                   <p className="flex justify-between font-semibold w-full">
                     <span>Grand Total</span>{" "}
-                    <span>{currentInvoice?.billingAmount}</span>
+                    <span>₹ {currentInvoice?.billingAmount}</span>
                   </p>
                 )}
               </div>
               <div className="flex justify-between border-b">
                 <span>Advance Amount Received</span>{" "}
-                <span>{currentInvoice?.receivedAmount}</span>
+                <span>₹ {currentInvoice?.receivedAmount}</span>
               </div>
               <div className="flex justify-between">
-                <span>Due Amount</span> <span>{currentInvoice?.dueAmount}</span>
+                <span>Due Amount</span>{" "}
+                <span>₹ {currentInvoice?.dueAmount}</span>
               </div>
             </div>
           </section>
