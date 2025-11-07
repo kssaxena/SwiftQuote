@@ -1,4 +1,3 @@
-
 const InputBox = ({
   LabelName,
   Placeholder,
@@ -8,10 +7,14 @@ const InputBox = ({
   Name,
   Value,
   onChange,
-  DisableRequired = false, // Default: Input is enabled
+  DisableRequired = false,
   Required = true,
   Min,
   Max,
+  pattern,
+  maxLength,
+  title,
+  onKeyPress,
 }) => {
   return (
     <div className="flex justify-center items-center w-full">
@@ -27,12 +30,16 @@ const InputBox = ({
           name={Name}
           type={Type}
           value={Value}
-          onChange={!DisableRequired ? onChange : undefined} // Prevents change when disabled
+          onChange={!DisableRequired ? onChange : undefined}
           placeholder={Placeholder}
           required={Required}
-          disabled={DisableRequired} // Disables input if required
+          disabled={DisableRequired}
           min={Min}
           max={Max}
+          pattern={pattern}
+          maxLength={maxLength}
+          title={title}
+          onKeyPress={onKeyPress}
           className={`w-full px-4 py-2 border rounded-md outline-none transition duration-200 ease-in-out 
             ${
               DisableRequired
