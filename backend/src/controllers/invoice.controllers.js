@@ -31,27 +31,22 @@ const createInvoice = asyncHandler(async (req, res) => {
     cgstValue,
     totalTax,
     discount,
+    discountInAmount, // added field from frontend
     receivedAmount,
     dueAmount,
   } = req.body;
-  console.log(
-    customerName,
-    customerAddress,
-    customerPhone,
-    customerState,
-    invoiceNumber,
-    invoiceDate,
-    destination,
-    paymentTerms,
-    billingAmount,
-    taxableValue,
-    sgstValue,
-    cgstValue,
-    totalTax,
-    receivedAmount
-  );
 
-  // Validate required fields
+  // ✅ Log incoming data for debugging
+  console.log({
+    customerName,
+    invoiceNumber,
+    billingAmount,
+    discount,
+    discountInAmount,
+    dueAmount,
+  });
+
+  // ✅ Required fields validation
   if (
     !customerName ||
     !customerAddress ||
@@ -61,40 +56,66 @@ const createInvoice = asyncHandler(async (req, res) => {
     !invoiceDate ||
     !destination ||
     !paymentTerms ||
-    !billingAmount ||
-    !taxableValue ||
-    !sgstValue ||
-    !cgstValue ||
-    !totalTax ||
-    !receivedAmount
+    billingAmount === undefined ||
+    taxableValue === undefined ||
+    sgstValue === undefined ||
+    cgstValue === undefined ||
+    totalTax === undefined ||
+    receivedAmount === undefined
   ) {
     throw new ApiError(400, "Please provide all required invoice fields");
   }
-  const existingInvoice = await Invoice.findOne({ invoiceNumber });
 
+  // ✅ Check for existing invoice number
+  const existingInvoice = await Invoice.findOne({ invoiceNumber });
   if (existingInvoice) {
-    throw new ApiError(
-      400,
-      "Invoice with this Invoice Number already Exist ! "
-    );
+    throw new ApiError(400, "Invoice with this Invoice Number already exists!");
   }
 
-  // Parse items from FormData (it comes as stringified JSON)
+  // ✅ Parse items safely
   let items = [];
   try {
     items = JSON.parse(req.body.items || "[]");
   } catch (err) {
     throw new ApiError(400, "Invalid items format");
   }
-
   if (!items.length) {
     throw new ApiError(400, "At least one item is required");
   }
-  const discountedGrandTotal =
-    billingAmount - (billingAmount * discount || 0) / 100;
-  const discountedDueAmount = dueAmount - discountedGrandTotal;
 
-  // Create new invoice
+  // ✅ Convert numeric fields properly
+  const num = (val) => (val !== "" && val !== undefined ? Number(val) : 0);
+  const billAmt = num(billingAmount);
+  const discountPercent = num(discount);
+  const discountAmountFixed = num(discountInAmount);
+  const receivedAmt = num(receivedAmount);
+  const dueAmt = num(dueAmount);
+
+  // ✅ Improved Discount Calculation
+  let discountedBill = billAmt;
+  let discountedDue = dueAmt;
+  let appliedDiscount = 0;
+
+  // Case 1: Percentage discount
+  if (discountPercent > 0 && discountPercent <= 100) {
+    appliedDiscount = (billAmt * discountPercent) / 100;
+    discountedBill = billAmt - appliedDiscount;
+  }
+
+  // Case 2: Flat discount (in amount)
+  else if (discountAmountFixed > 0) {
+    appliedDiscount = discountAmountFixed;
+    discountedBill = billAmt - appliedDiscount;
+  }
+
+  // Prevent negative total
+  if (discountedBill < 0) discountedBill = 0;
+
+  // ✅ Recalculate due amount after discount
+  discountedDue = discountedBill - receivedAmt;
+  if (discountedDue < 0) discountedDue = 0;
+
+  // ✅ Create invoice entry
   const invoice = await Invoice.create({
     userId,
     customerName,
@@ -112,15 +133,15 @@ const createInvoice = asyncHandler(async (req, res) => {
     paymentTerms,
     deliveryTerms,
     items,
-    billingAmount,
-    disBillAmount: discountedGrandTotal,
+    billingAmount: billAmt,
+    disBillAmount: discountedBill,
     taxableValue,
     sgstValue,
     cgstValue,
     totalTax,
-    discount,
-    receivedAmount,
-    dueAmount: discountedDueAmount,
+    discount: appliedDiscount,
+    receivedAmount: receivedAmt,
+    dueAmount: discountedDue,
   });
 
   res
@@ -135,7 +156,7 @@ const getUserAllInvoices = asyncHandler(async (req, res) => {
     throw new ApiError(400, "User ID is required");
   }
 
-  const invoices = await Invoice.find({ userId }).sort({ createdAt: -1 });
+  const invoices = await Invoice.find({ userId }).sort({ invoiceNumber: -1 });
 
   if (!invoices || invoices.length === 0) {
     throw new ApiError(404, "No invoices found for this user");
