@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import {
   fetchInvoiceById,
   updateInvoice,
@@ -10,13 +10,14 @@ import Button from "../../components/Button";
 import { useReactToPrint } from "react-to-print";
 import LoadingUI from "../../components/LoadingUI";
 import numberToWords from "number-to-words";
+import { FetchData } from "../../utils/FetchFromApi";
 
 const sgstRate = 9;
 const cgstRate = 9;
 
 const CurrentInvoice = ({ startLoading, stopLoading }) => {
   const { invoiceId } = useParams();
-
+  const navigate = useNavigate();
   const dispatch = useDispatch();
   const user = useSelector((store) => store.UserInfo.user[0]);
   const userId = user?._id;
@@ -200,6 +201,44 @@ const CurrentInvoice = ({ startLoading, stopLoading }) => {
     currentInvoice?.disBillAmount || currentInvoice?.billingAmount || 0
   );
 
+  const handleDeleteInvoice = async () => {
+    try {
+      startLoading();
+      const response = await FetchData(
+        `users/delete-invoice/${invoiceId}`,
+        "post"
+      );
+      console.log(response);
+      alert(response.data.data);
+      navigate("/");
+    } catch (err) {
+      console.log(err);
+      alert(
+        "Invoice can't be deleted due to some technical issue, Please try again later"
+      );
+    } finally {
+      stopLoading();
+    }
+  };
+
+  // const DeleteBrand = async (id) => {
+  //   try {
+  //     startLoading();
+  //     const response = await FetchData(
+  //       `brands/admin/delete-brand/${id}`,
+  //       "delete"
+  //     );
+  //     console.log(response);
+  //     alert(response.data.message);
+  //     window.location.reload();
+  //   } catch (err) {
+  //     console.log(err);
+  //     setError(err.response?.data?.message || "Failed to delete brand.");
+  //   } finally {
+  //     stopLoading();
+  //   }
+  // };
+
   return (
     <div className="py-20 w-full ">
       <div className="flex flex-col justify-center items-center gap-5 py-5">
@@ -207,6 +246,7 @@ const CurrentInvoice = ({ startLoading, stopLoading }) => {
           <h2 className="text-xl font-semibold">Invoice Id: {invoiceId}</h2>
           <Button Label="Print" onClick={reactToPrintFn} />
           <Button Label="Edit" onClick={openEdit} />
+          <Button Label="Delete" onClick={handleDeleteInvoice} />
         </div>
 
         <div

@@ -260,4 +260,19 @@ const updateInvoiceById = asyncHandler(async (req, res) => {
     .json(new ApiResponse(200, invoice, "Invoice updated successfully"));
 });
 
-export { createInvoice, getUserAllInvoices, getInvoiceById, updateInvoiceById };
+const deleteInvoice = asyncHandler(async (req, res) => {
+  const { invoiceId } = req.params;
+
+  const invoice = await Invoice.findByIdAndDelete(invoiceId);
+  if (!invoice) throw new ApiError(404, "Invoice not found");
+
+  res.status(200).json(new ApiResponse(200, "Invoice deleted Successfully"));
+});
+
+export {
+  createInvoice,
+  getUserAllInvoices,
+  getInvoiceById,
+  updateInvoiceById,
+  deleteInvoice,
+};

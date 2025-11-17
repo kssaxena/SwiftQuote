@@ -15,6 +15,7 @@ import { VerifyUser } from "../middlewares/auth.middlewares.js";
 import { upload } from "../middlewares/multer.middlewares.js";
 import {
   createInvoice,
+  deleteInvoice,
   getInvoiceById,
   getUserAllInvoices,
   updateInvoiceById,
@@ -56,6 +57,7 @@ router.route("/templates/create").post(VerifyUser, generateInvoice);
 router.route("/generate-invoice/:userId").post(VerifyUser, createInvoice);
 router.route("/get-all-invoices/:userId").get(VerifyUser, getUserAllInvoices);
 router.route("/get-invoice/:invoiceId").get(VerifyUser, getInvoiceById);
+router.route("/delete-invoice/:invoiceId").post(VerifyUser, deleteInvoice);
 router
   .route("/update-invoice/:invoiceId/:userId")
   .post(VerifyUser, updateInvoiceById);
