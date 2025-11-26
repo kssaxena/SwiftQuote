@@ -5,7 +5,7 @@ import { asyncHandler } from "../utils/asyncHandler.js";
 import { Invoice } from "../models/invoice.models.js";
 
 const createInvoice = asyncHandler(async (req, res) => {
-  const { userId } = req.params; // assuming you attach user in auth middleware
+  const { userId } = req.params;
   if (!userId) {
     throw new ApiError(401, "Unauthorized: User ID missing");
   }
@@ -31,12 +31,12 @@ const createInvoice = asyncHandler(async (req, res) => {
     cgstValue,
     totalTax,
     discount,
-    discountInAmount, // added field from frontend
+    discountInAmount,
     receivedAmount,
     dueAmount,
   } = req.body;
 
-  // ✅ Log incoming data for debugging
+  // Log incoming data
   console.log({
     customerName,
     invoiceNumber,
@@ -46,7 +46,7 @@ const createInvoice = asyncHandler(async (req, res) => {
     dueAmount,
   });
 
-  // ✅ Required fields validation
+  // Required fields check
   if (
     !customerName ||
     !customerAddress ||
@@ -66,13 +66,13 @@ const createInvoice = asyncHandler(async (req, res) => {
     throw new ApiError(400, "Please provide all required invoice fields");
   }
 
-  // ✅ Check for existing invoice number
+  // Check for existing invoice number
   const existingInvoice = await Invoice.findOne({ invoiceNumber });
   if (existingInvoice) {
     throw new ApiError(400, "Invoice with this Invoice Number already exists!");
   }
 
-  // ✅ Parse items safely
+  // Parse items
   let items = [];
   try {
     items = JSON.parse(req.body.items || "[]");
@@ -83,39 +83,49 @@ const createInvoice = asyncHandler(async (req, res) => {
     throw new ApiError(400, "At least one item is required");
   }
 
-  // ✅ Convert numeric fields properly
+  // Safe number parsing
   const num = (val) => (val !== "" && val !== undefined ? Number(val) : 0);
   const billAmt = num(billingAmount);
   const discountPercent = num(discount);
   const discountAmountFixed = num(discountInAmount);
   const receivedAmt = num(receivedAmount);
-  const dueAmt = num(dueAmount);
 
-  // ✅ Improved Discount Calculation
-  let discountedBill = billAmt;
-  let discountedDue = dueAmt;
+  // ================================
+  //   🔥 FINAL DISCOUNT CALCULATION
+  // ================================
+
   let appliedDiscount = 0;
+  let discountedBill = billAmt;
 
-  // Case 1: Percentage discount
+  // Case A → Percentage discount
   if (discountPercent > 0 && discountPercent <= 100) {
     appliedDiscount = (billAmt * discountPercent) / 100;
-    discountedBill = billAmt - appliedDiscount;
   }
 
-  // Case 2: Flat discount (in amount)
-  else if (discountAmountFixed > 0) {
+  // Case B → Flat discount (this OVERRIDES percentage if present)
+  if (discountAmountFixed > 0) {
     appliedDiscount = discountAmountFixed;
-    discountedBill = billAmt - appliedDiscount;
   }
 
-  // Prevent negative total
+  discountedBill = billAmt - appliedDiscount;
+
+  // Prevent negative value
   if (discountedBill < 0) discountedBill = 0;
 
-  // ✅ Recalculate due amount after discount
-  discountedDue = discountedBill - receivedAmt;
+  // Round off
+  appliedDiscount = Number(appliedDiscount.toFixed(2));
+  discountedBill = Number(discountedBill.toFixed(2));
+
+  // ================================
+  //       🔥 FINAL DUE CALCULATION
+  // ================================
+  let discountedDue = discountedBill - receivedAmt;
+
   if (discountedDue < 0) discountedDue = 0;
 
-  // ✅ Create invoice entry
+  discountedDue = Number(discountedDue.toFixed(2));
+
+  // Create invoice
   const invoice = await Invoice.create({
     userId,
     customerName,
