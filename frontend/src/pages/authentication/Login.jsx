@@ -53,12 +53,12 @@ const Login = ({ startLoading, stopLoading }) => {
         handleHome();
         // alert(response.data.data.message);
       } else {
-        setError("Failed to register.");
+        setError("Failed to Login.");
       }
     } catch (error) {
       alert(parseErrorMessage(error?.response?.data));
       // alertError("Error! Something went wrong.");
-      setError(err.response?.data?.message || "Failed to register.");
+      setError(err.response?.data?.message || "Failed to Login.");
     } finally {
       stopLoading();
     }
