@@ -1,4 +1,5 @@
 import { Router } from "express";
+// import { verify } from "crypto";
 import {
   registerUser,
   loginUser,
@@ -32,7 +33,14 @@ import {
   updateQuotationById,
   quotationStatus,
 } from "../controllers/quotation.controllers.js";
-import { verify } from "crypto";
+import {
+  addProduct,
+  addVariant,
+  deleteProduct,
+  deleteVariant,
+  updateProduct,
+  updateVariantStock,
+} from "../controllers/product.controllers.js";
 
 const router = Router();
 
@@ -79,6 +87,16 @@ router
 router
   .route("/update-quotation-status/:quotationId")
   .post(VerifyUser, quotationStatus);
+
+// routes for products
+router.post("/product", upload.single("image"), addProduct);
+router.put("/product/:id", updateProduct);
+router.delete("/product/:id", deleteProduct);
+
+router.post("/product/:productId/variant", addVariant);
+router.delete("/product/:productId/variant/:variantId", deleteVariant);
+
+router.put("/product/:productId/variant/:variantId/stock", updateVariantStock);
 
 //secured routes
 router.route("/logout").post(VerifyUser, LogOutUser);
