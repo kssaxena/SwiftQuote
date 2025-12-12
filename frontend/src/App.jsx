@@ -76,10 +76,7 @@ function App() {
           path="/current-quotation/:quotationId"
           element={<CurrentQuotation />}
         />
-        <Route
-          path="/current-product/:productId"
-          element={<CurrentProduct />}
-        />
+        <Route path="/current-product/:id" element={<CurrentProduct />} />
       </Routes>
       {/* <Footer /> */}
     </div>

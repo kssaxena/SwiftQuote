@@ -17,8 +17,9 @@ import { motion, AnimatePresence } from "framer-motion";
 const CurrentProduct = ({ startLoading, stopLoading }) => {
   const { id } = useParams();
   const dispatch = useDispatch();
-  const { products } = useSelector((state) => state.Products);
-
+  const user = useSelector((store) => store.UserInfo.user);
+  const { products } = useSelector((state) => state.Products.products);
+  console.log(products);
   const [product, setProduct] = useState(null);
   const [showStockModal, setShowStockModal] = useState(false);
   const [selectedVariant, setSelectedVariant] = useState(null);
@@ -33,12 +34,12 @@ const CurrentProduct = ({ startLoading, stopLoading }) => {
   });
 
   useEffect(() => {
-    if (!products.length) dispatch(fetchAllProducts());
-  }, [dispatch, products]);
+    if (!products?.length) dispatch(fetchAllProducts(user[0]?._id));
+  }, [dispatch, products, user]);
 
   useEffect(() => {
-    setProduct(products.find((p) => p._id === id));
-  }, [products, id]);
+    setProduct(products?.find((p) => p._id === id));
+  }, [products, id, user]);
 
   if (!product)
     return <div className="p-10 text-center text-gray-500">Loading...</div>;
