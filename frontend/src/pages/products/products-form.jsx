@@ -4,11 +4,12 @@ import React, { useState, useRef } from "react";
 import Button from "../../components/Button";
 import InputBox from "../../components/Input";
 import LoadingUI from "../../components/LoadingUI";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { addProduct } from "../../utils/slice/ProductSlice";
 
 const ProductForm = ({ onCancel, startLoading, stopLoading }) => {
   const dispatch = useDispatch();
+  const user = useSelector((store) => store.UserInfo.user);
   const formRef = useRef();
   const [variants, setVariants] = useState([
     { variantName: "", size: "", color: "", price: 0, stock: 0 },
@@ -35,10 +36,10 @@ const ProductForm = ({ onCancel, startLoading, stopLoading }) => {
     e.preventDefault();
     const formData = new FormData(formRef.current);
     formData.append("variants", JSON.stringify(variants));
-
-    startLoading();
-    await dispatch(addProduct(formData));
-    stopLoading();
+    console.log("from product form line 39", user[0]?._id);
+    // startLoading();
+    await dispatch(addProduct({ userId: user[0]?._id, formData }));
+    // stopLoading();
     onCancel();
   };
 

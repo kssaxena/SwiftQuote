@@ -11,6 +11,7 @@ import ReLoginError from "./pages/authentication/ReLoginError";
 import CurrentInvoice from "./pages/current-invoice/current-invoice";
 import CurrentEstimate from "./pages/current-estimate/current-estimate";
 import CurrentQuotation from "./pages/current-quotation/current-quotation";
+import CurrentProduct from "./pages/current-product/current-product";
 
 function App() {
   const user = useSelector((store) => store.UserInfo.user);
@@ -74,6 +75,10 @@ function App() {
         <Route
           path="/current-quotation/:quotationId"
           element={<CurrentQuotation />}
+        />
+        <Route
+          path="/current-product/:productId"
+          element={<CurrentProduct />}
         />
       </Routes>
       {/* <Footer /> */}

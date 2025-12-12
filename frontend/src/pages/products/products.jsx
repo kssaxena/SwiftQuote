@@ -10,18 +10,18 @@ import { fetchAllProducts } from "../../utils/slice/ProductSlice";
 
 const Products = ({ startLoading, stopLoading }) => {
   const dispatch = useDispatch();
-  const { products, loading } = useSelector((state) => state.Products);
-
+  const user = useSelector((store) => store.UserInfo.user);
+  const { products, loading } = useSelector((state) => state.Products.products);
   const [searchQuery, setSearchQuery] = useState("");
   const [showAddForm, setShowAddForm] = useState(false);
 
   const TableHeaders = ["Product", "Category", "Variants", "Stock", "Action"];
 
   useEffect(() => {
-    dispatch(fetchAllProducts());
-  }, [dispatch]);
+    dispatch(fetchAllProducts(user[0]?._id));
+  }, [user]);
 
-  const filteredProducts = products.filter((p) =>
+  const filteredProducts = products?.filter((p) =>
     p?.name?.toLowerCase()?.includes(searchQuery.toLowerCase())
   );
 
@@ -34,7 +34,7 @@ const Products = ({ startLoading, stopLoading }) => {
         </div>
         <div className="flex justify-end w-full">
           <InputBox
-            LabelName={<h1>Search among {products.length} products</h1>}
+            LabelName={<h1>Search among {products?.length} products</h1>}
             Value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             Placeholder="Search Products"
@@ -55,8 +55,8 @@ const Products = ({ startLoading, stopLoading }) => {
           </thead>
 
           <tbody>
-            {filteredProducts.length ? (
-              filteredProducts.map((product) => {
+            {filteredProducts?.length ? (
+              filteredProducts?.map((product) => {
                 const totalStock = product.variants.reduce(
                   (sum, v) => sum + v.stock,
                   0
@@ -69,7 +69,7 @@ const Products = ({ startLoading, stopLoading }) => {
                   >
                     <td className="px-5 py-3 text-[#7E63F4] font-medium">
                       <Link
-                        to={`/product/${product._id}`}
+                        to={`/current-product/${product._id}`}
                         className="hover:underline"
                       >
                         {product?.name}
@@ -80,7 +80,7 @@ const Products = ({ startLoading, stopLoading }) => {
                     <td className="px-5 py-3 font-semibold">{totalStock}</td>
                     <td className="px-5 py-3">
                       <Link
-                        to={`/product/${product._id}`}
+                        to={`/current-product/${product._id}`}
                         className="bg-blue-100 p-1 px-2 rounded text-blue-700 text-sm"
                       >
                         View / Edit
