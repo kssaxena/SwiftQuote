@@ -38,6 +38,7 @@ import {
   addVariant,
   deleteProduct,
   deleteVariant,
+  getUserAllProducts,
   updateProduct,
   updateVariantStock,
 } from "../controllers/product.controllers.js";
@@ -89,14 +90,23 @@ router
   .post(VerifyUser, quotationStatus);
 
 // routes for products
-router.post("/product", upload.single("image"), addProduct);
-router.put("/product/:id", updateProduct);
-router.delete("/product/:id", deleteProduct);
-
-router.post("/product/:productId/variant", addVariant);
-router.delete("/product/:productId/variant/:variantId", deleteVariant);
-
-router.put("/product/:productId/variant/:variantId/stock", updateVariantStock);
+router
+  .route("/product/add/:userId")
+  .post(upload.single("image"), VerifyUser, addProduct);
+router.route("/product/all/:userId").get(VerifyUser, getUserAllProducts);
+router.put("/product/:id", VerifyUser, updateProduct);
+router.delete("/product/:id", VerifyUser, deleteProduct);
+router.post("/product/:productId/variant", VerifyUser, addVariant);
+router.delete(
+  "/product/:productId/variant/:variantId",
+  VerifyUser,
+  deleteVariant
+);
+router.put(
+  "/product/:productId/variant/:variantId/stock",
+  VerifyUser,
+  updateVariantStock
+);
 
 //secured routes
 router.route("/logout").post(VerifyUser, LogOutUser);

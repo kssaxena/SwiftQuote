@@ -6,9 +6,9 @@ import { FetchData } from "../FetchFromApi";
 // 🟢 Fetch all products
 export const fetchAllProducts = createAsyncThunk(
   "products/fetchAll",
-  async (_, { rejectWithValue }) => {
+  async (userId, { rejectWithValue }) => {
     try {
-      const response = await FetchData("product/all", "get");
+      const response = await FetchData(`users/product/all/${userId}`, "get");
       return response.data.data;
     } catch (err) {
       return rejectWithValue(
@@ -21,11 +21,20 @@ export const fetchAllProducts = createAsyncThunk(
 // 🟢 Add product (multipart form with image/variant)
 export const addProduct = createAsyncThunk(
   "products/add",
-  async (formData, { rejectWithValue }) => {
+  async ({ formData, userId }, { rejectWithValue }) => {
+    console.log(userId);
+
     try {
-      const response = await FetchData("product", "post", formData, true);
+      const response = await FetchData(
+        `users/product/add/${userId}`,
+        "post",
+        formData,
+        true
+      );
+      console.log(response);
       return response.data.data;
     } catch (err) {
+      console.log(err);
       return rejectWithValue(
         err?.response?.data?.message || "Failed to add product"
       );

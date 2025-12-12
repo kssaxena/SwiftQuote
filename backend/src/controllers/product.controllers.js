@@ -5,31 +5,88 @@ import { asyncHandler } from "../utils/asyncHandler.js";
 import { DeleteImage, UploadImages } from "../utils/imageKit.io.js";
 
 const addProduct = asyncHandler(async (req, res) => {
-  const { name, category, variants, description } = req.body;
+  const { name, category = "", description = "" } = req.body;
+  const { userId } = req.params;
 
-  if (!name || !variants) {
-    throw new ApiError(400, "Product name & variants required");
+  if (!name) {
+    throw new ApiError(400, "Product name is required");
   }
 
+  // Parse variants: accept either array or JSON string
+  let variants = [];
+  if (req.body.variants) {
+    try {
+      variants =
+        typeof req.body.variants === "string"
+          ? JSON.parse(req.body.variants)
+          : req.body.variants;
+      if (!Array.isArray(variants)) {
+        throw new Error("Variants must be an array");
+      }
+    } catch (err) {
+      throw new ApiError(400, "Invalid variants format. Send JSON array.");
+    }
+  } else {
+    throw new ApiError(400, "At least one variant is required");
+  }
+
+  // Optional: check for duplicate product name
+  const exists = await Product.findOne({ name });
+  if (exists) {
+    throw new ApiError(400, "Product with same name already exists");
+  }
+
+  // Upload image if provided (match the pattern used in registerUser)
   let imageResponse = {};
+  try {
+    const imageFile = req.file;
+    if (imageFile) {
+      // Build a safe folder name from product name
+      const folderName = `${name}`.split(" ").join("-");
+      // Call UploadImages in same style as your registerUser usage
+      // (some UploadImages implementations accept extra args; this mirrors your working controller)
+      imageResponse = await UploadImages(
+        imageFile.filename,
+        { folderStructure: `all-products/${folderName}` },
+        [`${folderName}-img`]
+      );
 
-  // Handling file upload to ImageKit
-  if (req?.file?.filename) {
-    imageResponse = await UploadImages(req.file.filename, {
-      folderStructure: `/billing/products/${name}`,
-    });
+      // Basic validation of upload result
+      if (
+        !imageResponse ||
+        (!imageResponse.url && !imageResponse.fileId && !imageResponse.file_id)
+      ) {
+        throw new Error("ImageKit upload returned invalid response");
+      }
+    }
+  } catch (err) {
+    console.error("Failed to upload product image:", err);
+    // Prefer a 500 internal error for upload issues
+    throw new ApiError(
+      500,
+      "Failed to upload product image. Please try again."
+    );
   }
 
-  const product = await Product.create({
+  // Normalize fileId key (ImageKit response may use different keys)
+  const fileId =
+    imageResponse?.fileId || imageResponse?.file_id || imageResponse?.fileId;
+
+  // Prepare product payload
+  const productPayload = {
+    userId,
     name,
     category,
     description,
+    variants,
     image: {
-      url: imageResponse.url || "",
-      fileId: imageResponse.fileId || "",
+      url: imageResponse?.url || "",
+      fileId: fileId || "",
     },
-    variants: JSON.parse(variants),
-  });
+  };
+
+  // Save product
+  const product = await Product.create(productPayload);
 
   res
     .status(201)
@@ -127,6 +184,25 @@ const deleteVariant = asyncHandler(async (req, res) => {
   res.json(new ApiResponse(200, result, "Variant deleted successfully"));
 });
 
+const getUserAllProducts = asyncHandler(async (req, res) => {
+  const { userId } = req.params;
+  console.log("Fetching products for userId:", userId);
+
+  if (!userId) {
+    throw new ApiError(400, "User ID is required");
+  }
+
+  const products = await Product.find({ userId }).sort({ createdAt: -1 });
+
+  if (!products || products.length === 0) {
+    throw new ApiError(404, "No products found for this user");
+  }
+
+  return res
+    .status(200)
+    .json(new ApiResponse(200, { products }, "Products fetched successfully"));
+});
+
 export {
   addProduct,
   updateProduct,
@@ -134,4 +210,5 @@ export {
   addVariant,
   deleteProduct,
   deleteVariant,
+  getUserAllProducts,
 };

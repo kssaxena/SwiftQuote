@@ -17,6 +17,11 @@ const VariantSchema = new mongoose.Schema(
 
 const ProductSchema = new mongoose.Schema(
   {
+    userId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+      required: true,
+    },
     name: { type: String, required: true, unique: true },
     category: { type: String }, // Optional
     image: {
