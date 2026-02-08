@@ -87,13 +87,13 @@ const CurrentInvoice = ({ startLoading, stopLoading }) => {
         color: it.color || "",
         rate: Number(it.rate || 0),
         amount: Number(it.amount || 0),
-      })) || []
+      })) || [],
     );
   };
 
   const safeInvoiceNumber = currentInvoice?.invoiceNumber?.replace(
     /[\/:]/g,
-    "-"
+    "-",
   );
 
   const reactToPrintFn = useReactToPrint({
@@ -204,7 +204,7 @@ const CurrentInvoice = ({ startLoading, stopLoading }) => {
 
   const currentProducts = currentInvoice?.items;
   const words = numberToWords.toWords(
-    currentInvoice?.disBillAmount || currentInvoice?.billingAmount || 0
+    currentInvoice?.disBillAmount || currentInvoice?.billingAmount || 0,
   );
 
   // ------------------------------------------------------------------
@@ -393,6 +393,10 @@ const CurrentInvoice = ({ startLoading, stopLoading }) => {
               <span>Total Tax</span>
               <span>₹ {currentInvoice?.totalTax}</span>
             </div>
+            <div className="flex justify-between border-b">
+              <strong>Sub Total</strong>
+              <span>₹ {currentInvoice?.billingAmount}</span>
+            </div>
             {currentInvoice?.discount > 0 && (
               <div className="flex justify-between border-b">
                 <span>Discount</span>
@@ -474,6 +478,7 @@ const CurrentInvoice = ({ startLoading, stopLoading }) => {
               {/* Customer Details */}
               <div className="grid grid-cols-2 gap-4 border p-4 rounded-lg">
                 <InputBox
+                  Required={false}
                   LabelName="Customer Name"
                   Name="customerName"
                   Type="text"
@@ -481,6 +486,7 @@ const CurrentInvoice = ({ startLoading, stopLoading }) => {
                   onChange={handleChange}
                 />
                 <InputBox
+                  Required={false}
                   LabelName="Customer Address"
                   Name="customerAddress"
                   Type="text"
@@ -488,6 +494,7 @@ const CurrentInvoice = ({ startLoading, stopLoading }) => {
                   onChange={handleChange}
                 />
                 <InputBox
+                  Required={false}
                   LabelName="Phone Number"
                   Name="customerPhone"
                   Type="number"
@@ -495,6 +502,7 @@ const CurrentInvoice = ({ startLoading, stopLoading }) => {
                   onChange={handleChange}
                 />
                 <InputBox
+                  Required={false}
                   LabelName="GST Number"
                   Name="customerGST"
                   Type="text"
@@ -502,6 +510,7 @@ const CurrentInvoice = ({ startLoading, stopLoading }) => {
                   onChange={handleChange}
                 />
                 <InputBox
+                  Required={false}
                   LabelName="State Name & Code"
                   Name="customerState"
                   Type="text"
@@ -513,12 +522,14 @@ const CurrentInvoice = ({ startLoading, stopLoading }) => {
               {/* Invoice Details */}
               <div className="grid grid-cols-2 gap-4 border p-4 rounded-lg">
                 <InputBox
+                  Required={false}
                   LabelName="Invoice Number"
                   Name="invoiceNumber"
                   Value={formData.invoiceNumber}
                   onChange={handleChange}
                 />
                 <InputBox
+                  Required={false}
                   LabelName="Invoice Date"
                   Name="invoiceDate"
                   Type="date"
@@ -526,36 +537,42 @@ const CurrentInvoice = ({ startLoading, stopLoading }) => {
                   onChange={handleChange}
                 />
                 <InputBox
+                  Required={false}
                   LabelName="Reference No."
                   Name="referenceNo"
                   Value={formData.referenceNo}
                   onChange={handleChange}
                 />
                 <InputBox
+                  Required={false}
                   LabelName="Buyer's Order No."
                   Name="buyerOrderNo"
                   Value={formData.buyerOrderNo}
                   onChange={handleChange}
                 />
                 <InputBox
+                  Required={false}
                   LabelName="Dispatch Document No."
                   Name="dispatchDocNo"
                   Value={formData.dispatchDocNo}
                   onChange={handleChange}
                 />
                 <InputBox
+                  Required={false}
                   LabelName="Delivery Note"
                   Name="deliveryNote"
                   Value={formData.deliveryNote}
                   onChange={handleChange}
                 />
                 <InputBox
+                  Required={false}
                   LabelName="Destination"
                   Name="destination"
                   Value={formData.destination}
                   onChange={handleChange}
                 />
                 <InputBox
+                  Required={false}
                   LabelName="Payment Terms"
                   Name="paymentTerms"
                   Value={formData.paymentTerms}
@@ -570,6 +587,7 @@ const CurrentInvoice = ({ startLoading, stopLoading }) => {
                 {items.map((item, index) => (
                   <div key={index} className="bg-gray-100 p-3 rounded-lg mb-3">
                     <InputBox
+                      Required={false}
                       LabelName="Description"
                       Value={item.description}
                       onChange={(e) =>
@@ -579,6 +597,7 @@ const CurrentInvoice = ({ startLoading, stopLoading }) => {
 
                     <div className="grid grid-cols-3 gap-3">
                       <InputBox
+                        Required={false}
                         LabelName="Size"
                         Value={item.size}
                         onChange={(e) =>
@@ -586,6 +605,7 @@ const CurrentInvoice = ({ startLoading, stopLoading }) => {
                         }
                       />
                       <InputBox
+                        Required={false}
                         LabelName="Qty"
                         Type="number"
                         Value={item.qty}
@@ -594,6 +614,7 @@ const CurrentInvoice = ({ startLoading, stopLoading }) => {
                         }
                       />
                       <InputBox
+                        Required={false}
                         LabelName="Color"
                         Value={item.color}
                         onChange={(e) =>
@@ -601,6 +622,7 @@ const CurrentInvoice = ({ startLoading, stopLoading }) => {
                         }
                       />
                       <InputBox
+                        Required={false}
                         LabelName="Rate"
                         Type="number"
                         Value={item.rate}
@@ -610,7 +632,11 @@ const CurrentInvoice = ({ startLoading, stopLoading }) => {
                       />
                     </div>
 
-                    <InputBox LabelName="Amount" Value={item.amount} />
+                    <InputBox
+                      LabelName="Amount"
+                      Value={item.amount}
+                      Required={false}
+                    />
 
                     <Button
                       Label="Remove"
@@ -627,6 +653,7 @@ const CurrentInvoice = ({ startLoading, stopLoading }) => {
               {/* Summary */}
               <div className="border p-4 rounded-lg">
                 <InputBox
+                  Required={false}
                   LabelName="Total Billing Amount"
                   Type="number"
                   Name="billingAmount"
@@ -635,6 +662,7 @@ const CurrentInvoice = ({ startLoading, stopLoading }) => {
                 />
 
                 <InputBox
+                  Required={false}
                   LabelName="Discount"
                   Type="number"
                   Name="discount"
@@ -643,17 +671,28 @@ const CurrentInvoice = ({ startLoading, stopLoading }) => {
                 />
 
                 <InputBox
+                  Required={false}
                   LabelName="Taxable Value"
                   Value={numbers.taxableValue.toFixed(2)}
                 />
-                <InputBox LabelName="SGST" Value={numbers.sgst.toFixed(2)} />
-                <InputBox LabelName="CGST" Value={numbers.cgst.toFixed(2)} />
                 <InputBox
+                  Required={false}
+                  LabelName="SGST"
+                  Value={numbers.sgst.toFixed(2)}
+                />
+                <InputBox
+                  Required={false}
+                  LabelName="CGST"
+                  Value={numbers.cgst.toFixed(2)}
+                />
+                <InputBox
+                  Required={false}
                   LabelName="Total Tax"
                   Value={numbers.totalTax.toFixed(2)}
                 />
 
                 <InputBox
+                  Required={false}
                   LabelName="Amount Received"
                   Type="number"
                   Name="receivedAmount"
@@ -662,6 +701,7 @@ const CurrentInvoice = ({ startLoading, stopLoading }) => {
                 />
 
                 <InputBox
+                  Required={false}
                   LabelName="Due Amount"
                   Value={numbers.dueAmount.toFixed(2)}
                 />

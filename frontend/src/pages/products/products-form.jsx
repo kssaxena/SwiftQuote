@@ -36,7 +36,9 @@ const ProductForm = ({ onCancel, startLoading, stopLoading }) => {
     e.preventDefault();
     const formData = new FormData(formRef.current);
     formData.append("variants", JSON.stringify(variants));
-    console.log("from product form line 39", user[0]?._id);
+    // for (let pair of formData.entries()) {
+    //   console.log(pair[0] + ": " + pair[1]);
+    // }
     // startLoading();
     await dispatch(addProduct({ userId: user[0]?._id, formData }));
     // stopLoading();
