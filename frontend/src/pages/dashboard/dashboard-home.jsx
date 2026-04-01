@@ -171,7 +171,7 @@ const DashboardHome = ({ startLoading, stopLoading }) => {
   return (
     <div className="bg-white px-6 py-10 md:px-12 text-gray-800 h-full overflow-scroll">
       {/* Welcome */}
-      <div className="mb-8 flex justify-between items-center">
+      <div className="mb-8 flex flex-col md:flex-row justify-between items-start md:items-center">
         <h1 className="text-3xl font-semibold mb-1">Welcome back 👋</h1>
         <p className="text-gray-500">
           Here's a quick overview of your billing activity.
@@ -251,7 +251,7 @@ const DashboardHome = ({ startLoading, stopLoading }) => {
         </div>
 
         {/* Yearly Revenue & Pending Ledger Chart */}
-        <div className="mb-12 w-[40vw]">
+        <div className="mb-12 w-[40vw] hidden lg:block">
           <h2 className="text-xl font-semibold mb-4">Ledger Summary</h2>
           <div className="bg-gray-50 p-6 rounded-lg shadow-sm">
             <ResponsiveContainer width="100%" height={400}>
