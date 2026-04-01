@@ -9,6 +9,7 @@ import { fetchInvoices } from "../../utils/slice/InvoiceSlice";
 import { Link } from "react-router-dom";
 import InputBox from "../../components/Input";
 import { MdCurrencyRupee } from "react-icons/md";
+import { formatDateString } from "../../utils/mongoDB_DateTime";
 
 const Bills = ({ startLoading, stopLoading }) => {
   const dispatch = useDispatch();
@@ -103,7 +104,8 @@ const Bills = ({ startLoading, stopLoading }) => {
                     {invoice?.invoiceNumber}
                   </td>
                   <td className="px-5 py-3 text-gray-500">
-                    <p>{new Date(invoice?.createdAt).toLocaleDateString()}</p>
+                    {/* <p>{new Date(invoice?.invoiceDate).toLocaleDateString()}</p> */}
+                    <p>{formatDateString(invoice?.invoiceDate)}</p>
                     {/* <p className="text-xs">
                       {new Date(invoice?.createdAt).toLocaleTimeString()}
                     </p> */}
