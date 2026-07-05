@@ -18,6 +18,7 @@ const createInvoice = asyncHandler(async (req, res) => {
     customerGST,
     invoiceNumber,
     invoiceDate,
+    estDelDate,
     referenceNo,
     buyerOrderNo,
     dispatchDocNo,
@@ -35,16 +36,6 @@ const createInvoice = asyncHandler(async (req, res) => {
     receivedAmount,
     dueAmount,
   } = req.body;
-
-  // Log incoming data
-  console.log({
-    customerName,
-    invoiceNumber,
-    billingAmount,
-    discount,
-    discountInAmount,
-    dueAmount,
-  });
 
   // Required fields check
   if (
@@ -135,6 +126,7 @@ const createInvoice = asyncHandler(async (req, res) => {
     customerState,
     invoiceNumber,
     invoiceDate,
+    estDelDate,
     referenceNo,
     buyerOrderNo,
     dispatchDocNo,

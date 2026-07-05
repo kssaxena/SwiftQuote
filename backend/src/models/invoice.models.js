@@ -27,6 +27,7 @@ const invoiceSchema = new mongoose.Schema(
     // Invoice Details
     invoiceNumber: { type: String, required: true },
     invoiceDate: { type: Date, required: true },
+    estDelDate: { type: Date },
     referenceNo: { type: String },
     buyerOrderNo: { type: String },
     dispatchDocNo: { type: String },
@@ -51,7 +52,7 @@ const invoiceSchema = new mongoose.Schema(
 
     // pdfUrl: String, // optional if you want to generate/store PDF later
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
 export const Invoice = mongoose.model("Invoice", invoiceSchema);
