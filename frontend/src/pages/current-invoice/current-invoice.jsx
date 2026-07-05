@@ -37,6 +37,7 @@ const CurrentInvoice = ({ startLoading, stopLoading }) => {
     customerState: "",
     invoiceNumber: "",
     invoiceDate: "",
+    estDelDate: "",
     referenceNo: "",
     buyerOrderNo: "",
     dispatchDocNo: "",
@@ -66,6 +67,7 @@ const CurrentInvoice = ({ startLoading, stopLoading }) => {
       customerGST: inv?.customerGST || "",
       customerState: inv?.customerState || "",
       invoiceNumber: inv?.invoiceNumber || "",
+      estDelDate: formatDateForInput(inv?.estDelDate) || "",
       invoiceDate: formatDateForInput(inv?.invoiceDate),
       referenceNo: inv?.referenceNo || "",
       buyerOrderNo: inv?.buyerOrderNo || "",
@@ -192,6 +194,8 @@ const CurrentInvoice = ({ startLoading, stopLoading }) => {
   };
 
   const handleDeleteInvoice = async () => {
+    if (!window.confirm("Are you sure you want to delete this invoice ?"))
+      return;
     try {
       startLoading();
       const res = await FetchData(`users/delete-invoice/${invoiceId}`, "post");
@@ -278,9 +282,13 @@ const CurrentInvoice = ({ startLoading, stopLoading }) => {
                 <strong>Destination: </strong>
                 {currentInvoice?.destination}
               </p>
-              <p>
+              <p className="border-b">
                 <strong>Payment Terms: </strong>
                 {currentInvoice?.paymentTerms}
+              </p>
+              <p>
+                <strong>Estimated Delivery Date: </strong>
+                {formatDateForInput(currentInvoice?.estDelDate)}
               </p>
             </div>
           </div>
@@ -526,6 +534,14 @@ const CurrentInvoice = ({ startLoading, stopLoading }) => {
                   LabelName="Invoice Number"
                   Name="invoiceNumber"
                   Value={formData.invoiceNumber}
+                  onChange={handleChange}
+                />
+                <InputBox
+                  Required={false}
+                  LabelName="Estimated Delivery Date"
+                  Name="estDelDate"
+                  Type="date"
+                  Value={formData.estDelDate}
                   onChange={handleChange}
                 />
                 <InputBox

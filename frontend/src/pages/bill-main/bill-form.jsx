@@ -136,7 +136,7 @@ const Bill_form = ({ onCancel, startLoading, stopLoading }) => {
       console.log(createInvoice.err);
       alert(
         err?.payload?.message ||
-          "An error occurred while generating the invoice."
+          "An error occurred while generating the invoice.",
       );
     } finally {
       stopLoading();
@@ -257,6 +257,11 @@ const Bill_form = ({ onCancel, startLoading, stopLoading }) => {
               Placeholder="Enter Buyer's Order No."
               Name="buyerOrderNo"
               Required={false}
+            />
+            <InputBox
+              LabelName="Estimated Delivery Date*"
+              Type="date"
+              Name="estDelDate"
             />
           </div>
 
