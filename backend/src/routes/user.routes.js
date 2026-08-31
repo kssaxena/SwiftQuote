@@ -42,6 +42,14 @@ import {
   updateProduct,
   updateVariantStock,
 } from "../controllers/product.controllers.js";
+import {
+  createPurchaseOrder,
+  getPurchaseOrdersByUserId,
+  getPurchaseOrderById,
+  updatePurchaseOrderById,
+  deletePurchaseOrder,
+  updatePurchaseOrderStatus,
+} from "../controllers/purchaseOrder.controllers.js";
 
 const router = Router();
 
@@ -100,13 +108,33 @@ router.post("/product/:productId/variant", VerifyUser, addVariant);
 router.delete(
   "/product/:productId/variant/:variantId",
   VerifyUser,
-  deleteVariant
+  deleteVariant,
 );
 router.put(
   "/product/:productId/variant/:variantId/stock",
   VerifyUser,
-  updateVariantStock
+  updateVariantStock,
 );
+
+// routes for purchase orders
+router
+  .route("/generate-purchase-order/:userId")
+  .post(VerifyUser, createPurchaseOrder);
+router
+  .route("/get-all-purchase-orders/:userId")
+  .get(VerifyUser, getPurchaseOrdersByUserId);
+router
+  .route("/get-purchase-order/:purchaseOrderId")
+  .get(VerifyUser, getPurchaseOrderById);
+router
+  .route("/update-purchase-order/:purchaseOrderId/:userId")
+  .post(VerifyUser, updatePurchaseOrderById);
+router
+  .route("/delete-purchase-order/:purchaseOrderId/:userId")
+  .post(VerifyUser, deletePurchaseOrder);
+router
+  .route("/update-purchase-order-status/:purchaseOrderId")
+  .post(VerifyUser, updatePurchaseOrderStatus);
 
 //secured routes
 router.route("/logout").post(VerifyUser, LogOutUser);
