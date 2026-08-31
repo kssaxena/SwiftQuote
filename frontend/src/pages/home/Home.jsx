@@ -11,6 +11,7 @@ import { LuLogOut } from "react-icons/lu";
 import { clearUser } from "../../utils/slice/UserInfoSlice";
 import Quotations from "../quotations/quotations";
 import Products from "../products/products";
+import PurchaseOrders from "../purchase-orders/purchase-orders";
 
 const Home = ({ startLoading, stopLoading }) => {
   const user = useSelector((store) => store.UserInfo.user);
@@ -18,7 +19,7 @@ const Home = ({ startLoading, stopLoading }) => {
   const Dispatch = useDispatch();
   const navigate = useNavigate();
   const [activeSection, setActiveSection] = useState(
-    () => localStorage.getItem("activeSection") || "Dashboard"
+    () => localStorage.getItem("activeSection") || "Dashboard",
   );
 
   useEffect(() => {
@@ -32,6 +33,7 @@ const Home = ({ startLoading, stopLoading }) => {
     "Bills",
     "Estimate Invoice",
     "Quotations",
+    "Purchase Orders",
     "Products",
   ];
   return user.length ? (
@@ -109,6 +111,7 @@ const Home = ({ startLoading, stopLoading }) => {
         {activeSection === "Bills" && <Bills />}
         {activeSection === "Estimate Invoice" && <Estimates />}
         {activeSection === "Quotations" && <Quotations />}
+        {activeSection === "Purchase Orders" && <PurchaseOrders />}
         {activeSection === "Products" && <Products />}
       </main>
     </div>
