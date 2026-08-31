@@ -4,6 +4,7 @@ import InvoiceSlice from "./slice/InvoiceSlice";
 import EstimateSlice from "./slice/EstimateSlice";
 import QuotationSlice from "./slice/QuotationSlice";
 import ProductSlice from "./slice/ProductSlice";
+import PurchaseOrderSlice from "./slice/PurchaseOrderSlice";
 
 const store = configureStore({
   reducer: {
@@ -12,6 +13,7 @@ const store = configureStore({
     Estimates: EstimateSlice,
     Quotation: QuotationSlice,
     Products: ProductSlice,
+    PurchaseOrders: PurchaseOrderSlice,
   },
 });
 
