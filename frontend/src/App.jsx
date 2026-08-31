@@ -12,6 +12,7 @@ import CurrentInvoice from "./pages/current-invoice/current-invoice";
 import CurrentEstimate from "./pages/current-estimate/current-estimate";
 import CurrentQuotation from "./pages/current-quotation/current-quotation";
 import CurrentProduct from "./pages/current-product/current-product";
+import CurrentPurchaseOrder from "./pages/current-purchase-order/current-purchase-order";
 
 function App() {
   const user = useSelector((store) => store.UserInfo.user);
@@ -34,7 +35,7 @@ function App() {
         localStorage.setItem("AccessToken", user.data.data.tokens.AccessToken);
         localStorage.setItem(
           "RefreshToken",
-          user.data.data.tokens.RefreshToken
+          user.data.data.tokens.RefreshToken,
         );
 
         // Storing data inside redux store
@@ -77,6 +78,10 @@ function App() {
           element={<CurrentQuotation />}
         />
         <Route path="/current-product/:id" element={<CurrentProduct />} />
+        <Route
+          path="/current-purchase-order/:purchaseOrderId"
+          element={<CurrentPurchaseOrder />}
+        />
       </Routes>
       {/* <Footer /> */}
     </div>
