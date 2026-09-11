@@ -183,7 +183,7 @@ const CurrentPurchaseOrder = ({ startLoading, stopLoading }) => {
           userId,
           formData: formDataObj,
         }),
-      );
+      ).unwrap();
 
       setIsEditOpen(false);
     } catch (err) {

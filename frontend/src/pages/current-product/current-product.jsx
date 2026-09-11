@@ -18,7 +18,7 @@ const CurrentProduct = ({ startLoading, stopLoading }) => {
   const { id } = useParams();
   const dispatch = useDispatch();
   const user = useSelector((store) => store.UserInfo.user);
-  const { products } = useSelector((state) => state.Products.products);
+  const { products } = useSelector((state) => state.Products);
   console.log(products);
   const [product, setProduct] = useState(null);
   const [showStockModal, setShowStockModal] = useState(false);
@@ -34,7 +34,9 @@ const CurrentProduct = ({ startLoading, stopLoading }) => {
   });
 
   useEffect(() => {
-    if (!products?.length) dispatch(fetchAllProducts(user[0]?._id));
+    if (!products?.length && user[0]?._id) {
+      dispatch(fetchAllProducts(user[0]._id));
+    }
   }, [dispatch, products, user]);
 
   useEffect(() => {
@@ -52,7 +54,7 @@ const CurrentProduct = ({ startLoading, stopLoading }) => {
       updateProduct({
         id: product._id,
         data: { [field]: value },
-      })
+      }),
     );
   };
 
@@ -62,7 +64,7 @@ const CurrentProduct = ({ startLoading, stopLoading }) => {
       addVariant({
         productId: product._id,
         data: newVariant,
-      })
+      }),
     );
     setNewVariant({
       variantName: "",
@@ -76,7 +78,7 @@ const CurrentProduct = ({ startLoading, stopLoading }) => {
   // 🛠 Inline price edit
   const updateVariantField = async (variantId, field, value) => {
     const newVariants = product.variants.map((v) =>
-      v._id === variantId ? { ...v, [field]: value } : v
+      v._id === variantId ? { ...v, [field]: value } : v,
     );
     setProduct({ ...product, variants: newVariants });
 
@@ -84,7 +86,7 @@ const CurrentProduct = ({ startLoading, stopLoading }) => {
       updateProduct({
         id: product._id,
         data: { variants: newVariants },
-      })
+      }),
     );
   };
 
@@ -98,7 +100,7 @@ const CurrentProduct = ({ startLoading, stopLoading }) => {
         productId: product._id,
         variantId: variant._id,
         stock: newStock,
-      })
+      }),
     );
   };
 
@@ -110,7 +112,7 @@ const CurrentProduct = ({ startLoading, stopLoading }) => {
         productId: product._id,
         variantId: selectedVariant._id,
         stock: Number(newStockValue),
-      })
+      }),
     );
     setShowStockModal(false);
   };
@@ -196,7 +198,7 @@ const CurrentProduct = ({ startLoading, stopLoading }) => {
                   updateVariantField(
                     variant._id,
                     "price",
-                    Number(e.target.value)
+                    Number(e.target.value),
                   )
                 }
               />
@@ -233,7 +235,7 @@ const CurrentProduct = ({ startLoading, stopLoading }) => {
                     deleteVariant({
                       productId: product._id,
                       variantId: variant._id,
-                    })
+                    }),
                   )
                 }
               />
