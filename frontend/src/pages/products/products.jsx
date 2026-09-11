@@ -11,18 +11,18 @@ import { fetchAllProducts } from "../../utils/slice/ProductSlice";
 const Products = ({ startLoading, stopLoading }) => {
   const dispatch = useDispatch();
   const user = useSelector((store) => store.UserInfo.user);
-  const { products, loading } = useSelector((state) => state.Products.products);
+  const { products, loading } = useSelector((state) => state.Products);
   const [searchQuery, setSearchQuery] = useState("");
   const [showAddForm, setShowAddForm] = useState(false);
 
   const TableHeaders = ["Product", "Category", "Variants", "Stock", "Action"];
 
   useEffect(() => {
-    dispatch(fetchAllProducts(user[0]?._id));
-  }, [user]);
+    if (user[0]?._id) dispatch(fetchAllProducts(user[0]._id));
+  }, [dispatch, user]);
 
   const filteredProducts = products?.filter((p) =>
-    p?.name?.toLowerCase()?.includes(searchQuery.toLowerCase())
+    p?.name?.toLowerCase()?.includes(searchQuery.toLowerCase()),
   );
 
   return (
@@ -59,7 +59,7 @@ const Products = ({ startLoading, stopLoading }) => {
               filteredProducts?.map((product) => {
                 const totalStock = product.variants.reduce(
                   (sum, v) => sum + v.stock,
-                  0
+                  0,
                 );
 
                 return (
