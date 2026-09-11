@@ -9,7 +9,7 @@ export const fetchPurchaseOrders = createAsyncThunk(
         `users/get-all-purchase-orders/${userId}`,
         "get",
       );
-      return response.data.data.purchaseOrders;
+      return response.data.data;
     } catch (err) {
       return rejectWithValue(
         err.response?.data || "Failed to fetch purchase orders",
@@ -26,7 +26,7 @@ export const fetchPurchaseOrderById = createAsyncThunk(
         `users/get-purchase-order/${purchaseOrderId}`,
         "get",
       );
-      return response.data.data.purchaseOrder;
+      return response.data.data;
     } catch (err) {
       return rejectWithValue(
         err.response?.data || "Failed to fetch purchase order",
@@ -43,14 +43,9 @@ export const createPurchaseOrder = createAsyncThunk(
         `users/generate-purchase-order/${userId}`,
         "post",
         formData,
+        true,
       );
-      console.log(response);
-      alert(
-        response.data.data.message ||
-          response.data.message ||
-          "Purchase Order created successfully!",
-      );
-      return response.data.data.purchaseOrder;
+      return response.data.data;
     } catch (err) {
       alert("Failed to create Purchase Order");
       return rejectWithValue(
@@ -68,6 +63,7 @@ export const updatePurchaseOrder = createAsyncThunk(
         `users/update-purchase-order/${purchaseOrderId}/${userId}`,
         "post",
         formData,
+        true,
       );
       return response.data.data;
     } catch (err) {
@@ -80,11 +76,11 @@ export const updatePurchaseOrder = createAsyncThunk(
 
 export const deletePurchaseOrder = createAsyncThunk(
   "purchaseOrders/deletePurchaseOrder",
-  async (purchaseOrderId, { rejectWithValue }) => {
+  async ({ purchaseOrderId, userId }, { rejectWithValue }) => {
     try {
       const response = await FetchData(
-        `users/delete-purchase-order/${purchaseOrderId}`,
-        "delete",
+        `users/delete-purchase-order/${purchaseOrderId}/${userId}`,
+        "post",
       );
       return purchaseOrderId;
     } catch (err) {

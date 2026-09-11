@@ -9,13 +9,13 @@ export const fetchAllProducts = createAsyncThunk(
   async (userId, { rejectWithValue }) => {
     try {
       const response = await FetchData(`users/product/all/${userId}`, "get");
-      return response.data.data;
+      return response.data.data.products;
     } catch (err) {
       return rejectWithValue(
-        err?.response?.data?.message || "Failed to fetch products"
+        err?.response?.data?.message || "Failed to fetch products",
       );
     }
-  }
+  },
 );
 
 // 🟢 Add product (multipart form with image/variant)
@@ -29,17 +29,17 @@ export const addProduct = createAsyncThunk(
         `users/product/add/${userId}`,
         "post",
         formData,
-        true
+        true,
       );
       console.log(response);
       return response.data.data;
     } catch (err) {
       console.log(err);
       return rejectWithValue(
-        err?.response?.data?.message || "Failed to add product"
+        err?.response?.data?.message || "Failed to add product",
       );
     }
-  }
+  },
 );
 
 // 🔵 Update product general details (text only)
@@ -47,14 +47,14 @@ export const updateProduct = createAsyncThunk(
   "products/update",
   async ({ id, data }, { rejectWithValue }) => {
     try {
-      const response = await FetchData(`product/${id}`, "post", data);
+      const response = await FetchData(`users/product/${id}`, "put", data);
       return response.data.data;
     } catch (err) {
       return rejectWithValue(
-        err?.response?.data?.message || "Failed to update product"
+        err?.response?.data?.message || "Failed to update product",
       );
     }
-  }
+  },
 );
 
 // 🔵 Add new variant
@@ -63,17 +63,17 @@ export const addVariant = createAsyncThunk(
   async ({ productId, data }, { rejectWithValue }) => {
     try {
       const response = await FetchData(
-        `product/${productId}/variant`,
+        `users/product/${productId}/variant`,
         "post",
-        data
+        data,
       );
       return response.data.data;
     } catch (err) {
       return rejectWithValue(
-        err?.response?.data?.message || "Failed to add variant"
+        err?.response?.data?.message || "Failed to add variant",
       );
     }
-  }
+  },
 );
 
 // 🟡 Update Stock manually for specific variant
@@ -82,17 +82,17 @@ export const updateVariantStock = createAsyncThunk(
   async ({ productId, variantId, stock }, { rejectWithValue }) => {
     try {
       const response = await FetchData(
-        `product/${productId}/variant/${variantId}/stock`,
-        "post",
-        { stock }
+        `users/product/${productId}/variant/${variantId}/stock`,
+        "put",
+        { stock },
       );
       return response.data.data;
     } catch (err) {
       return rejectWithValue(
-        err?.response?.data?.message || "Failed to update stock"
+        err?.response?.data?.message || "Failed to update stock",
       );
     }
-  }
+  },
 );
 
 // 🔴 Delete Variant
@@ -101,16 +101,16 @@ export const deleteVariant = createAsyncThunk(
   async ({ productId, variantId }, { rejectWithValue }) => {
     try {
       const response = await FetchData(
-        `product/${productId}/variant/${variantId}`,
-        "delete"
+        `users/product/${productId}/variant/${variantId}`,
+        "delete",
       );
       return { productId, variantId };
     } catch (err) {
       return rejectWithValue(
-        err?.response?.data?.message || "Failed to delete variant"
+        err?.response?.data?.message || "Failed to delete variant",
       );
     }
-  }
+  },
 );
 
 // 🔴 Delete Product
@@ -118,14 +118,14 @@ export const deleteProduct = createAsyncThunk(
   "products/delete",
   async (productId, { rejectWithValue }) => {
     try {
-      await FetchData(`product/${productId}`, "delete");
+      await FetchData(`users/product/${productId}`, "delete");
       return productId;
     } catch (err) {
       return rejectWithValue(
-        err?.response?.data?.message || "Failed to delete product"
+        err?.response?.data?.message || "Failed to delete product",
       );
     }
-  }
+  },
 );
 
 // 🔥 Slice
@@ -162,7 +162,7 @@ const ProductSlice = createSlice({
       // UPDATE PRODUCT
       .addCase(updateProduct.fulfilled, (state, action) => {
         const idx = state.products.findIndex(
-          (p) => p._id === action.payload._id
+          (p) => p._id === action.payload._id,
         );
         if (idx > -1) state.products[idx] = action.payload;
       })
@@ -170,7 +170,7 @@ const ProductSlice = createSlice({
       // ADD VARIANT
       .addCase(addVariant.fulfilled, (state, action) => {
         const idx = state.products.findIndex(
-          (p) => p._id === action.payload._id
+          (p) => p._id === action.payload._id,
         );
         if (idx > -1) state.products[idx] = action.payload;
       })
@@ -178,7 +178,7 @@ const ProductSlice = createSlice({
       // UPDATE STOCK
       .addCase(updateVariantStock.fulfilled, (state, action) => {
         const idx = state.products.findIndex(
-          (p) => p._id === action.payload._id
+          (p) => p._id === action.payload._id,
         );
         if (idx > -1) state.products[idx] = action.payload;
       })
