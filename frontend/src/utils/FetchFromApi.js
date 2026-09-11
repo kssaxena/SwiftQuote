@@ -24,6 +24,9 @@ export const FetchData = async (url, method, data, file = false) => {
   } else if (method === "post") {
     const response = await axios.post(`${Base_URL}/${url}`, data, options);
     return response;
+  } else if (method === "put") {
+    const response = await axios.put(`${Base_URL}/${url}`, data, options);
+    return response;
   } else if (method === "delete") {
     const response = await axios.delete(`${Base_URL}/${url}`, options);
     return response;
