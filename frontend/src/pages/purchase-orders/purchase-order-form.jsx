@@ -48,8 +48,8 @@ const PurchaseOrderForm = ({ onCancel, startLoading, stopLoading }) => {
       return;
     }
 
-    if (isNaN(num) || num < 1 || num > 100) {
-      setError("Discount must be between 1 and 100.");
+    if (isNaN(num) || num < 0) {
+      setError("Discount amount cannot be negative.");
     } else {
       setError("");
     }
@@ -111,7 +111,9 @@ const PurchaseOrderForm = ({ onCancel, startLoading, stopLoading }) => {
 
       startLoading();
 
-      await dispatch(createPurchaseOrder({ userId: user[0]?._id, formData }));
+      await dispatch(
+        createPurchaseOrder({ userId: user[0]?._id, formData }),
+      ).unwrap();
 
       // Reset form + states
       formRef.current.reset();
@@ -457,9 +459,11 @@ const PurchaseOrderForm = ({ onCancel, startLoading, stopLoading }) => {
           <InputBox
             LabelName="Discount (if any in amount)"
             Placeholder="Discount in amount"
-            Name="shippingCharge"
+            Name="discountAmount"
             Type="text"
             Required={false}
+            Value={discountAmount}
+            onChange={handleDiscountAmountChange}
             onKeyPress={(e) => {
               if (
                 !/[0-9]/.test(e.key) &&

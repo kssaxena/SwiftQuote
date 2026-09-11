@@ -40,7 +40,7 @@ const ProductForm = ({ onCancel, startLoading, stopLoading }) => {
     //   console.log(pair[0] + ": " + pair[1]);
     // }
     // startLoading();
-    await dispatch(addProduct({ userId: user[0]?._id, formData }));
+    await dispatch(addProduct({ userId: user[0]?._id, formData })).unwrap();
     // stopLoading();
     onCancel();
   };
