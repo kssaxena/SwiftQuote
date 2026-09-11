@@ -48,7 +48,7 @@ const addProduct = asyncHandler(async (req, res) => {
       imageResponse = await UploadImages(
         imageFile.filename,
         { folderStructure: `all-products/${folderName}` },
-        [`${folderName}-img`]
+        [`${folderName}-img`],
       );
 
       // Basic validation of upload result
@@ -64,7 +64,7 @@ const addProduct = asyncHandler(async (req, res) => {
     // Prefer a 500 internal error for upload issues
     throw new ApiError(
       500,
-      "Failed to upload product image. Please try again."
+      "Failed to upload product image. Please try again.",
     );
   }
 
@@ -73,12 +73,21 @@ const addProduct = asyncHandler(async (req, res) => {
     imageResponse?.fileId || imageResponse?.file_id || imageResponse?.fileId;
 
   // Prepare product payload
+  const normalizedVariants = variants.map((variant) => ({
+    ...variant,
+    attributes: {
+      ...(variant.attributes || {}),
+      ...(variant.size !== undefined ? { size: variant.size } : {}),
+      ...(variant.color !== undefined ? { color: variant.color } : {}),
+    },
+  }));
+
   const productPayload = {
     userId,
     name,
     category,
     description,
-    variants,
+    variants: normalizedVariants,
     image: {
       url: imageResponse?.url || "",
       fileId: fileId || "",
@@ -95,7 +104,7 @@ const addProduct = asyncHandler(async (req, res) => {
 
 const updateProduct = asyncHandler(async (req, res) => {
   const { id } = req.params;
-  const { name, category, description } = req.body;
+  const { name, category, description, variants } = req.body;
 
   const product = await Product.findById(id);
   if (!product) throw new ApiError(404, "Product not found");
@@ -103,6 +112,12 @@ const updateProduct = asyncHandler(async (req, res) => {
   product.name = name || product.name;
   product.category = category || product.category;
   product.description = description || product.description;
+  if (variants !== undefined) {
+    if (!Array.isArray(variants)) {
+      throw new ApiError(400, "Variants must be an array");
+    }
+    product.variants = variants;
+  }
 
   await product.save();
 
@@ -118,7 +133,7 @@ const updateVariantStock = asyncHandler(async (req, res) => {
   const product = await Product.findOneAndUpdate(
     { _id: productId, "variants._id": variantId },
     { $set: { "variants.$.stock": stock } },
-    { new: true }
+    { new: true },
   );
 
   if (!product) throw new ApiError(404, "Product or variant not found");
@@ -128,7 +143,7 @@ const updateVariantStock = asyncHandler(async (req, res) => {
 
 const addVariant = asyncHandler(async (req, res) => {
   const { productId } = req.params;
-  const { variantName, attributes, price, stock } = req.body;
+  const { variantName, attributes, size, color, price, stock } = req.body;
 
   if (!variantName || !price) {
     throw new ApiError(400, "Variant name & price required");
@@ -140,13 +155,17 @@ const addVariant = asyncHandler(async (req, res) => {
       $push: {
         variants: {
           variantName,
-          attributes,
+          attributes: {
+            ...(attributes || {}),
+            ...(size !== undefined ? { size } : {}),
+            ...(color !== undefined ? { color } : {}),
+          },
           price,
           stock: stock || 0,
         },
       },
     },
-    { new: true }
+    { new: true },
   );
 
   if (!product) throw new ApiError(404, "Product not found");
@@ -176,7 +195,7 @@ const deleteVariant = asyncHandler(async (req, res) => {
   const result = await Product.findByIdAndUpdate(
     productId,
     { $pull: { variants: { _id: variantId } } },
-    { new: true }
+    { new: true },
   );
 
   if (!result) throw new ApiError(404, "Product or variant not found");

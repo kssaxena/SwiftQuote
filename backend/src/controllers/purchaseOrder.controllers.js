@@ -27,6 +27,7 @@ const createPurchaseOrder = asyncHandler(async (req, res) => {
     cgstValue,
     totalTax,
     discount,
+    discountAmount,
     shippingCharge,
     advanceAmount,
     notes,
@@ -74,6 +75,7 @@ const createPurchaseOrder = asyncHandler(async (req, res) => {
   const num = (val) => (val !== "" && val !== undefined ? Number(val) : 0);
   const billAmt = num(billingAmount);
   const discountPercent = num(discount);
+  const fixedDiscount = num(discountAmount);
   const shippingAmt = num(shippingCharge);
   const advanceAmt = num(advanceAmount);
 
@@ -81,7 +83,9 @@ const createPurchaseOrder = asyncHandler(async (req, res) => {
   let appliedDiscount = 0;
   let discountedBill = billAmt;
 
-  if (discountPercent > 0 && discountPercent <= 100) {
+  if (fixedDiscount > 0) {
+    appliedDiscount = fixedDiscount;
+  } else if (discountPercent > 0 && discountPercent <= 100) {
     appliedDiscount = (billAmt * discountPercent) / 100;
   }
 
@@ -191,6 +195,7 @@ const updatePurchaseOrderById = asyncHandler(async (req, res) => {
     cgstValue,
     totalTax,
     discount,
+    discountAmount,
     shippingCharge,
     advanceAmount,
     notes,
@@ -210,6 +215,7 @@ const updatePurchaseOrderById = asyncHandler(async (req, res) => {
   const num = (val) => (val !== "" && val !== undefined ? Number(val) : 0);
   const billAmt = num(billingAmount || purchaseOrder.billingAmount);
   const discountPercent = num(discount || purchaseOrder.discount);
+  const fixedDiscount = num(discountAmount);
   const shippingAmt = num(shippingCharge || purchaseOrder.shippingCharge);
   const advanceAmt = num(advanceAmount || purchaseOrder.advanceAmount);
 
@@ -217,7 +223,9 @@ const updatePurchaseOrderById = asyncHandler(async (req, res) => {
   let appliedDiscount = 0;
   let discountedBill = billAmt;
 
-  if (discountPercent > 0 && discountPercent <= 100) {
+  if (fixedDiscount > 0) {
+    appliedDiscount = fixedDiscount;
+  } else if (discountPercent > 0 && discountPercent <= 100) {
     appliedDiscount = (billAmt * discountPercent) / 100;
   }
 
